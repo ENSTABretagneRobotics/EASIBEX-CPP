@@ -1,4 +1,4 @@
-// Compatiblity layer with ibex for the simple interval library from Luc JAULIN, with minor modifications from Fabrice LE BARS.
+// Compatiblity layer with ibex for the simple interval library from Luc JAULIN, with minor modifications from Fabrice LE BARS and Jeremy NICOLA.
 
 #ifndef __INTERVAL__
 #define __INTERVAL__
@@ -150,6 +150,11 @@
 #pragma warning(disable : 4512)
 #endif // _MSC_VER
 
+// To avoid Visual Studio warnings that would happen for any project using interval. 
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#endif // _MSC_VER
+
 #ifndef INFINITY
 #define INFINITY HUGE_VAL
 #endif // INFINITY
@@ -186,6 +191,7 @@ public:
 };
 
 // Needed because of errors : overloads have similar conversions...
+// Should be friend?
 inline interval_empty_default operator*(const interval_empty_default& x1, const interval_empty_default& x2) { return ibex::Interval(x1)*ibex::Interval(x2); }
 inline interval_empty_default operator*(const ibex::Interval& x1, const interval_empty_default& x2) { return ibex::Interval(x1)*ibex::Interval(x2); }
 inline interval_empty_default operator*(const interval_empty_default& x1, const ibex::Interval& x2) { return ibex::Interval(x1)*ibex::Interval(x2); }
@@ -325,18 +331,21 @@ iboolean In(const interval&, const interval&);
 // Contractors
 //----------------------------------------------------------------------
 #define Cplus Cadd
-void Cadd(interval& Z, interval& Y, interval& X, int sens = 0);
-void Cadd(interval& Z, double y, interval& X, int sens = 0);
-void Cadd(interval& Z, interval& Y, double x, int sens = 0);
+void Cadd(interval& Z, interval& X, interval& Y, int sens = 0);
+void Cadd(interval& Z, double x, interval& Y, int sens = 0);
+void Cadd(interval& Z, interval& X, double y, int sens = 0);
+//void Cadd(double z, interval& X, interval& Y, int sens = 0);
 #define Cmoins Csub
-void Csub(interval& Z, interval& Y, interval& X, int sens = 0);
-void Csub(interval& Z, double y, interval& X, int sens = 0);
-void Csub(interval& Z, interval& Y, double x, int sens = 0);
+void Csub(interval& Z, interval& X, interval& Y, int sens = 0);
+void Csub(interval& Z, double x, interval& Y, int sens = 0);
+void Csub(interval& Z, interval& X, double y, int sens = 0);
+//void Csub(double z, interval& X, interval& Y, int sens = 0);
 #define Cprod Cmul
-void Cmul(interval& Z, interval& Y, interval& X, int sens = 0);
-void Cmul(interval& Z, double y, interval& X, int sens = 0);
-void Cmul(interval& Z, interval& Y, double x, int sens = 0);
-void Cdiv(interval& Z, interval& Y, interval& X, int sens = 0);
+void Cmul(interval& Z, interval& X, interval& Y, int sens = 0);
+void Cmul(interval& Z, double x, interval& Y, int sens = 0);
+void Cmul(interval& Z, interval& X, double y, int sens = 0);
+//void Cmul(double z, interval& X, interval& Y, int sens = 0);
+void Cdiv(interval& Z, interval& X, interval& Y, int sens = 0);
 //#define Cegal Cequal
 #define Csame_sign Csign
 void Csign(interval& Y, interval& X);
