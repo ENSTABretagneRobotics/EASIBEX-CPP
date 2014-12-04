@@ -1,4 +1,4 @@
-// Compatiblity layer with ibex for the simple interval library from Luc JAULIN, with minor modifications from Fabrice LE BARS.
+// Compatiblity layer with ibex for the simple interval library from Luc JAULIN, with minor modifications from Fabrice LE BARS and Jeremy NICOLA.
 
 #include "interval.h"
 
@@ -419,88 +419,88 @@ iboolean In(const interval& F, const interval& Y)
 //----------------------------------------------------------------------
 // Contractors
 //----------------------------------------------------------------------
-void Cadd(interval& Z, interval& Y, interval& X, int sens)
+void Cadd(interval& Z, interval& X, interval& Y, int sens)
 {
-	if (sens != -1) Z &= Y+X; 
-	if (sens != 1) bwd_add(Z,Y,X); 
+	if (sens != -1) Z &= X+Y; 
+	if (sens != 1) bwd_add(Z,X,Y); 
 }
 //----------------------------------------------------------------------
-void Cadd(interval& Z, double y, interval& X, int sens)
+void Cadd(interval& Z, double x, interval& Y, int sens)
 {
-	if (sens != -1) Z &= y+X; 
-	if (sens != 1) 
-	{
-		interval Y(y);
-		bwd_add(Z,Y,X); 
-	}
-}
-//----------------------------------------------------------------------
-void Cadd(interval& Z, interval& Y, double x, int sens)
-{
-	if (sens != -1) Z &= Y+x; 
+	if (sens != -1) Z &= x+Y; 
 	if (sens != 1) 
 	{
 		interval X(x);
-		bwd_add(Z,Y,X); 
+		bwd_add(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Csub(interval& Z, interval& Y, interval& X, int sens)
+void Cadd(interval& Z, interval& X, double y, int sens)
 {
-	if (sens != -1) Z &= Y-X; 
-	if (sens != 1) bwd_sub(Z,Y,X); 
-}
-//----------------------------------------------------------------------
-void Csub(interval& Z, double y, interval& X, int sens)
-{
-	if (sens != -1) Z &= y-X; 
+	if (sens != -1) Z &= X+y; 
 	if (sens != 1) 
 	{
 		interval Y(y);
-		bwd_sub(Z,Y,X); 
+		bwd_add(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Csub(interval& Z, interval& Y, double x, int sens)
+void Csub(interval& Z, interval& X, interval& Y, int sens)
 {
-	if (sens != -1) Z &= Y-x; 
+	if (sens != -1) Z &= X-Y; 
+	if (sens != 1) bwd_sub(Z,X,Y); 
+}
+//----------------------------------------------------------------------
+void Csub(interval& Z, double x, interval& Y, int sens)
+{
+	if (sens != -1) Z &= x-Y; 
 	if (sens != 1) 
 	{
 		interval X(x);
-		bwd_sub(Z,Y,X); 
+		bwd_sub(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Cmul(interval& Z, interval& Y, interval& X, int sens)
+void Csub(interval& Z, interval& X, double y, int sens)
 {
-	if (sens != -1) Z &= Y*X; 
-	if (sens != 1) bwd_mul(Z,Y,X); 
-}
-//----------------------------------------------------------------------
-void Cmul(interval& Z, double y, interval& X, int sens)
-{
-	if (sens != -1) Z &= y*X; 
+	if (sens != -1) Z &= X-y; 
 	if (sens != 1) 
 	{
 		interval Y(y);
-		bwd_mul(Z,Y,X); 
+		bwd_sub(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Cmul(interval& Z, interval& Y, double x, int sens)
+void Cmul(interval& Z, interval& X, interval& Y, int sens)
 {
-	if (sens != -1) Z &= Y*x; 
+	if (sens != -1) Z &= X*Y; 
+	if (sens != 1) bwd_mul(Z,X,Y); 
+}
+//----------------------------------------------------------------------
+void Cmul(interval& Z, double x, interval& Y, int sens)
+{
+	if (sens != -1) Z &= x*Y; 
 	if (sens != 1) 
 	{
 		interval X(x);
-		bwd_mul(Z,Y,X); 
+		bwd_mul(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Cdiv(interval& Z, interval& Y, interval& X, int sens)
+void Cmul(interval& Z, interval& X, double y, int sens)
+{
+	if (sens != -1) Z &= X*y; 
+	if (sens != 1) 
+	{
+		interval Y(y);
+		bwd_mul(Z,X,Y); 
+	}
+}
+//----------------------------------------------------------------------
+void Cdiv(interval& Z, interval& X, interval& Y, int sens)
 {    
-	if (sens != -1) Z &= Y/X;
-	if (sens != 1) bwd_div(Z,Y,X);
+	if (sens != -1) Z &= X/Y;
+	if (sens != 1) bwd_div(Z,X,Y);
 }
 //----------------------------------------------------------------------
 void Csign(interval& Y, interval& X)
