@@ -5,7 +5,6 @@
 using namespace std;
 using namespace ibex;
 
-
 //----------------------------------------------------------------------
 // Constructors/destructors
 //----------------------------------------------------------------------
@@ -199,9 +198,13 @@ bool box::IsEmpty(void) const
 void box::Resize(int dim1)
 {
 	box X(dim1);
-	for (int k = 1; k <= dim1; k++)
+	for (int k = 1; k <= min(dim, dim1); k++)
 	{
 		X[k] = (*this)[k];
+	}
+	for (int k = dim+1; k <= dim1; k++)
+	{
+		X[k] = interval(-oo,oo);
 	}
 	delete[] data; (*this) = X;
 }
@@ -300,6 +303,8 @@ box Proj(const box& X, int i, int j)
 //----------------------------------------------------------------------
 box Inter(const box& X, const box& Y)
 {
+	// Should update with ibex IntervalVector...
+
 	box Ans(Size(X));
 	if ((X.IsEmpty()) || (Y.IsEmpty())) { return Ans; }
 	for (int k = 1; k <= Size(Ans); k++)
@@ -312,6 +317,8 @@ box Inter(const box& X, const box& Y)
 //----------------------------------------------------------------------
 box Inter(vector<box>& x)
 {
+	// Should update with ibex IntervalVector...
+
 	//box E = Empty(0);
 	box E = EmptyBox(0);
 	if (x.size() == 0) return E;
@@ -529,6 +536,15 @@ bool Subset(box& X, box& Y)
 	return (b);
 }
 //----------------------------------------------------------------------
+bool SubsetStrict(box& X, box& Y)
+{
+	if (Y.IsEmpty()) return false;
+	if (X.IsEmpty()) return true;
+	bool b = true;
+	for (int k = 1; k <= Size(X); k++) b = b && SubsetStrict(X[k], Y[k]);
+	return (b);
+}
+//----------------------------------------------------------------------
 iboolean In(box X, box Y)
 {
 	if (X.IsEmpty() || Y.IsEmpty()) return ifalse;
@@ -547,7 +563,7 @@ bool Prop(box& X, box& Y)  // Normalement X is a subset of y (used in SIVEX)
 	if (X.IsEmpty()) return false;
 	if (Y.IsEmpty()) return false;
 	for (int k = 1; k <= Size(X); k++)
-		if ((X[k].lb() == Y[k].lb()) || (X[k].ub() == Y[k].ub())) return (true);
+		if ((X[k].lb() == Y[k].lb())||(X[k].ub() == Y[k].ub())) return (true);
 	return false;
 }
 //----------------------------------------------------------------------
@@ -783,5 +799,47 @@ void BisectAlong(box& X, box& X1, box& X2, int i)
 	double m = ((X[i].lb())+(1.01*X[i].ub()))/2.01;
 	X1[i] = interval(X1[i].lb(),m);
 	X2[i] = interval(m,X2[i].ub());
+}
+//----------------------------------------------------------------------
+vector<box>* diff(box x, box y)
+{
+	const int nn = x.dim;
+	vector<box> *tmp = new vector<box>(); // in the worst case, there is 2n boxes
+	tmp->reserve(2*nn);
+	interval c1, c2;
+	if (y.IsEmpty()) 
+	{
+		tmp->push_back(x);
+	} 
+	else 
+	{
+		for (int var = 1; var <= nn; var++) 
+		{
+			diffI(x[var],y[var],c1,c2);
+
+			if (!c1.is_empty()) 
+			{
+				box v(nn);
+				for (int i = 1; i < var; i++)
+					v[i] = y[i];
+				v[var] = c1;
+				for (int i = var+1; i <= nn; i++)
+					v[i] = x[i];
+				tmp->push_back(v);
+
+				if (!c2.is_empty()) 
+				{
+					box v(nn);
+					for (int i = 1; i < var; i++)
+						v[i] = y[i];
+					v[var] = c2;
+					for (int i = var+1; i <= nn; i++)
+						v[i] = x[i];
+					tmp->push_back(v);
+				}
+			}
+		}
+	}
+	return tmp;
 }
 //----------------------------------------------------------------------

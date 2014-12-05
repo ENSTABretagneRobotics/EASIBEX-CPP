@@ -201,6 +201,10 @@ inline interval_empty_default operator*(const interval_empty_default& x1, const 
 // interval will be noted as before...
 #define interval interval_empty_default
 //#define interval ibex::Interval
+
+// In some cases you might need to disable totally the following defines.
+// However, most of the time it should be possible to use e.g. #undef isEmpty where appropriate when 
+// there are conflicts, as well as including this header at last (this happens sometimes with Qt)...
 #ifndef DISABLE_DEFINES_OLD_INTERVAL_CLASS_VARIABLES
 #define inf lb()
 #define sup ub()
@@ -261,17 +265,17 @@ void DistanceDirSegmentsOrCircles(double& d, double& phi, double mx, double my, 
 //----------------------------------------------------------------------
 //std::ostream& operator<<(std::ostream& os, const interval& a);
 #ifdef QT_VERSION 
-inline QDataStream& operator<<(QDataStream& s, const interval& i)
-{
-	s << i.lb() << i.ub() << i.is_empty();
-	return s;
-}
-
-inline QDataStream& operator>>(QDataStream& s, interval& i)
-{
-	s >> i.lb() >> i.ub() >> i.is_empty();
-	return s;
-}
+//inline QDataStream& operator<<(QDataStream& s, const interval& i)
+//{
+//	s << i.lb() << i.ub() << i.is_empty();
+//	return s;
+//}
+//
+//inline QDataStream& operator>>(QDataStream& s, interval& i)
+//{
+//	s >> i.lb() >> i.ub() >> i.is_empty();
+//	return s;
+//}
 
 inline QDebug operator<<(QDebug os, const interval& a)
 {
@@ -326,6 +330,7 @@ double Width(const interval&);
 double ToReal(const interval&);
 bool Disjoint(const interval& a, const interval& b);
 bool Subset(const interval& a, const interval& b);
+bool SubsetStrict(const interval& a, const interval& b);
 iboolean In(const interval&, const interval&);
 //----------------------------------------------------------------------
 // Contractors
@@ -379,5 +384,9 @@ void C_q_in(interval& x, int q, vector<interval>& y);
 // Separators
 //----------------------------------------------------------------------
 void SinRing(interval& X, interval& Y, double cx, double cy, interval R, bool outer);
+//----------------------------------------------------------------------
+// Other
+//----------------------------------------------------------------------
+void diffI(interval &x0, interval &x1, interval &c0, interval &c1);
 
 #endif // __INTERVAL__
