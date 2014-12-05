@@ -399,15 +399,22 @@ double ToReal(const interval& a)
 //----------------------------------------------------------------------
 bool Disjoint(const interval& a, const interval& b)
 {
-	if (a.is_empty() || b.is_empty()) return true;
-	return ((a.ub() < b.lb()) || (b.ub() < a.lb()));
+	if (a.is_empty()||b.is_empty()) return true;
+	return ((a.ub() < b.lb())||(b.ub() < a.lb()));
 }
 //----------------------------------------------------------------------
 bool Subset(const interval& a, const interval& b)
 {
 	if (a.is_empty()) return true;
 	if (b.is_empty()) return false;
-	return ((a.lb() >= b.lb()) && (a.ub() <= b.ub()));
+	return ((a.lb() >= b.lb())&&(a.ub() <= b.ub()));
+}
+//----------------------------------------------------------------------
+bool SubsetStrict(const interval& a, const interval& b)
+{
+	if (a.is_empty()) return true;
+	if (b.is_empty()) return false;
+	return ((a.lb() > b.lb())&&(a.ub() < b.ub()));
 }
 //----------------------------------------------------------------------
 iboolean In(const interval& F, const interval& Y)
@@ -545,8 +552,8 @@ void Csin(interval &Y, interval &X, int sens)
 //-----------------------------------------------------------------------
 void Ctan(interval& Y, interval& X, int sens)
 {
-	if (sens == 1)  { Y &=tan(X); }
-	if (sens == -1) 
+	if (sens != -1)  { Y &= tan(X); }
+	if (sens != 1) 
 	{ 
 		bwd_tan(Y,X); 
 		Y &= tan(X); //On est oblige de le rappeler car sinon par optimal // bug Ibex
@@ -790,5 +797,28 @@ void SinRing(interval& X, interval& Y, double cx, double cy, interval R, bool ou
 	Xb=Pb[0]; Yb=Pb[1];
 	X=Xa|Xb;
 	Y=Ya|Yb;
+}
+//----------------------------------------------------------------------
+// Other
+//----------------------------------------------------------------------
+void diffI(interval &x0, interval &x1, interval &c0, interval &c1)
+{
+	//interval xt = Inter(Inter(x0, x1)-x1,interval(0,0));
+	if (x1.is_empty())
+	{
+		c0 = interval(); c1 = interval();
+	} 
+	else 
+	{
+		c0 = (x1.lb() == x0.lb()) ? interval() : interval(x1.lb(),x0.lb());
+		c1 = (x0.ub() == x1.ub()) ? interval() : interval(x0.ub(),x1.ub());
+		if (abs(c0.ub() - c0.lb()) < 1e-10) c0 = interval();
+		if (abs(c1.ub() - c1.lb()) < 1e-10) c1 = interval();
+	}
+	if (c0.is_empty())
+	{
+		c0 = c1;
+		c1 = interval();
+	}
 }
 //----------------------------------------------------------------------
