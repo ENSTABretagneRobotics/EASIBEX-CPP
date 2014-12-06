@@ -202,6 +202,10 @@ inline interval_empty_default operator*(const interval_empty_default& x1, const 
 #define interval interval_empty_default
 //#define interval ibex::Interval
 
+// To be able to use Interval like in ibex... However this might be confusing as ibex::Interval does not 
+// have the same default constuctor as interval...
+//#define Interval interval_empty_default
+
 // In some cases you might need to disable totally the following defines.
 // However, most of the time it should be possible to use e.g. #undef isEmpty where appropriate when 
 // there are conflicts, as well as including this header at last (this happens sometimes with Qt)...
@@ -313,6 +317,8 @@ interval PowRoot(const interval& x, int num, int den);
 #define Atan ibex::atan
 interval Det(interval&, interval&, interval&, interval&);
 interval Det(interval& ux, interval& uy, double& vx, double& vy);
+interval Step(const interval&);
+interval Parabole(const interval&, double, double, double);
 interval Inter(const interval&, const interval&);
 interval Inter(vector<interval> x);
 interval Union(const interval&, const interval&);
@@ -332,6 +338,7 @@ bool Disjoint(const interval& a, const interval& b);
 bool Subset(const interval& a, const interval& b);
 bool SubsetStrict(const interval& a, const interval& b);
 iboolean In(const interval&, const interval&);
+bool In(double, const interval&);
 //----------------------------------------------------------------------
 // Contractors
 //----------------------------------------------------------------------
@@ -351,9 +358,22 @@ void Cmul(interval& Z, double x, interval& Y, int sens = 0);
 void Cmul(interval& Z, interval& X, double y, int sens = 0);
 //void Cmul(double z, interval& X, interval& Y, int sens = 0);
 void Cdiv(interval& Z, interval& X, interval& Y, int sens = 0);
-//#define Cegal Cequal
+#define Cegal Cequal
+void Cequal(interval& Y, interval& X, int sens);
+void Cequal(interval& Y, interval& X);
+void Cmin(interval& a, interval& b, interval& c, int sens = 0);
+void Cmin(interval& a, interval& b, interval& c, interval& d, int sens = 0);
+void Cmin(interval& a, interval& b, interval& c, interval& d, interval& e, int sens = 0);
+int Cmin(interval& a, vector<interval>& x, int sens = 0);
+void Cmax(interval& a, interval& b, interval& c, int sens = 0);
+void Cabs(interval& Y, interval& X, int sens = 0);
 #define Csame_sign Csign
 void Csign(interval& Y, interval& X);
+void Csign(interval& Y, interval& X, int sens, double a = 0);
+void Cchi(interval& F, interval& A, interval& B, interval& C);
+void Cgeq(interval& Y, interval& X);
+void Cinteger(interval&);
+void Cboolean(interval&);
 void Csqr(interval& Y, interval& X, int sens = 0);
 void Cexp(interval& Y, interval& X, int sens = 0);
 void Clog(interval& Y, interval& X, int sens = 0);
@@ -366,18 +386,87 @@ void Catan(interval& Y, interval& X, int sens = 0);
 #define CNorm Cnorm
 void Cnorm(interval& N, interval& X, interval& Y);
 void Cnorm(interval& N, interval& X, interval& Y, interval& Z, int sens);
-#define CDet Cdet
-void Cdet(interval& det, interval& ux, interval& uy, interval& vx, interval& vy);
 #define CScal Cscal
 void Cscal(interval& s, interval& ux, interval& uy, interval& vx, interval& vy);
 void Cscal(interval& s, double& ux, double& uy, interval& vx, interval& vy);
+#define CDet Cdet
+void Cdet(interval& det, interval& ux, interval& uy, interval& vx, interval& vy, int sens = 0);
+void Cdet(interval& det, double& ux, double& uy, interval& vx, interval& vy, int sens = 0);
+void Cdet(interval& det, interval& ux, interval& uy, double& vx, double& vy, int sens = 0);
 void Cstep(interval& Y, interval& X);
+void Cstep(interval& Y, interval& X, int sens, double a = 0);
+void Cramp(interval& Y, interval& X, int sens = 0, double a = 0);
+void Cheaviside(interval& Y, interval& X, int sens = 0, double a = 0);
+void Crect(interval& Z, interval& X, interval& Y, int sens = 0);
+void Crect(interval& Y, interval& X, int sens = 0);
+void Ctriangle(interval& Y, interval& X, int sens = 0);
+void CDistanceDirLine(interval& dist, interval& mx, interval& my, interval& theta, 
+					  double& ax, double& ay, double& bx, double& by);
+int CDistanceDirSegment(interval& dist, interval& mx, interval& my, interval& theta, 
+						double ax, double ay, double bx, double by, int sens = 0);
+void CDistanceDirSegments(interval& distmin, interval& mx, interval& my, interval& theta, 
+						  vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+void CPointInLine(interval& mx, interval& my, double& ax, double& ay, double& bx, double& by);
 #define CinSegment CPointInSegment
 void CPointInSegment(interval& mx, interval& my, double ax, double ay, double bx, double by);
 #define CinSegments CPointInSegments
 void CPointInSegments(interval& mx, interval& my, vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
 #define CinCircle CPointInCircle
 void CPointInCircle(interval& mx, interval& my, double cx, double cy, double r);
+#define CinCircles CPointInCircles
+void CPointInCircles(interval& mx, interval& my, vector<double> cx, vector<double> cy, vector<double> r, bool truth = true);
+#define CinSegmentsOrCircles CPointInSegmentsOrCircles
+void CPointInSegmentsOrCircles(interval& mx, interval& my, 
+							   vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
+							   vector<double> cx, vector<double> cy, vector<double> r);
+void CPointOutsideSegment(interval& mx, interval& my, double& ax, double& ay, double& bx, double& by, bool outer);
+void CPointOutsideSegments(interval& mx, interval& my, 
+						   vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, bool outer);
+void CPoseInSegment(interval& mx, interval& my, interval& phi, double& ax, double& ay, double& bx, double& by);
+void CPoseInSegments(interval& mx, interval& my, interval& phi, 
+					 vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+void CPoseInCircle(interval& mx, interval& my, interval& phi, double& cx, double& cy, double& r);
+void CPoseInCircles(interval& mx, interval& my, interval& phi, vector<double> cx, vector<double> cy, vector<double> r);
+void CPoseInSegmentsOrCircles(interval& mx, interval& my, interval& malpha, 
+							  vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
+							  vector<double> cx, vector<double> cy, vector<double> r);
+void CPoseTrans(interval& qx, interval& qy, interval& d, interval& px, interval& py, interval& theta);  //Go straight
+void CPoseRotTrans(interval& qx, interval& qy, interval& beta, interval& phi, interval& d, interval& px, interval& py, interval& alpha);
+void CPoseTransInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& d, 
+								vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
+								vector<double> cx,vector<double> cy, vector<double> r);
+void CPoseTransRotInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& d, interval& psi, 
+								   vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
+								   vector<double> cx, vector<double> cy, vector<double> r);
+void CPoseRotTransRotInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& phi, interval& d, interval& psi, 
+									  vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
+									  vector<double> cx, vector<double> cy, vector<double> r);
+void CPoseRotTransPointInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& phi, interval& d, 
+										vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
+										vector<double> cx, vector<double> cy, vector<double> r);
+void CPoseTransPointInWall(interval& px,interval& py, interval& alpha, interval& d, 
+						   double ax, double ay, double bx, double by, bool truth = true);
+void CPoseTransPointInWalls(interval& px,interval& py, interval& alpha, interval& d0, 
+							vector<double>& ax, vector<double>& ay, vector<double>& bx, vector<double>& by, bool truth = true);
+void CPoseTransPointInWallsOrCircles(interval& px,interval& py, interval& alpha, interval& d0, 
+									 vector<double> ax,vector<double> ay,vector<double> bx,vector<double> by, 
+									 vector<double> cx, vector<double> cy, vector<double> r, bool truth = true);
+void CPoseTowardSegment(interval& mx, interval& my, interval& theta, 
+						double& ax, double& ay, double& bx, double& by, bool truth = true);
+#define Ccroisepas Cnocross
+void Cnocross(interval& px, interval& py, interval& mx, interval& my, double& ax, double& ay, double& bx, double& by);
+#define CPatteCroiseAucunSegment CLegCrossNoSegment
+void CLegCrossNoSegment(interval& dist, interval& px, interval& py, interval& theta, 
+						vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+void CLegOnWalls(interval& dist, interval& px, interval& py, interval& theta, 
+				 vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+void CLegOnWallsOrCircles(interval& dist, interval& px, interval& py, interval& theta, 
+						  vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
+						  vector<double> cx, vector<double> cy, vector<double> r);
+void ShowContraction(interval&, interval&, interval&, interval&);
+void IntButterfly(interval& Y, interval Yo, interval dY, interval& X, interval Xo, int sens);
+void Inter1(interval&, interval&, const interval&, const interval&, const interval&);
+void Sucre(interval&, const interval&);
 void Cnotin(interval& X, interval& Y);
 void C_q_in(interval& x, int q, vector<interval>& y);
 //----------------------------------------------------------------------
@@ -388,5 +477,7 @@ void SinRing(interval& X, interval& Y, double cx, double cy, interval R, bool ou
 // Other
 //----------------------------------------------------------------------
 void diffI(interval &x0, interval &x1, interval &c0, interval &c1);
+iboolean TestDiskExists(const interval& X, const interval& Y, const interval& P1, const interval& P2, const interval& P3);
+iboolean TestDiskForall(const interval& X, const interval& Y, const interval& P1, const interval& P2, const interval& P3);
 
 #endif // __INTERVAL__
