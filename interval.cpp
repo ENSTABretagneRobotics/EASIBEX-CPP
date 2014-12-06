@@ -25,6 +25,9 @@ const interval nai = interval();
 using namespace std;
 using namespace ibex;
 
+//----------------------------------------------------------------------
+// Operators
+//----------------------------------------------------------------------
 std::ostream& operator<<(std::ostream& os, const interval_empty_default& a)
 {
 	if (a.is_empty()) os << "EmptyInterval";
@@ -35,6 +38,8 @@ std::ostream& operator<<(std::ostream& os, const interval_empty_default& a)
 	else os << a.lb();
 	return os;
 }
+//----------------------------------------------------------------------
+// Member functions
 //----------------------------------------------------------------------
 interval_empty_default& interval_empty_default::Intersect(const interval_empty_default& Y) 
 { 
