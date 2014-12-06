@@ -25,6 +25,21 @@ const interval nai = interval();
 using namespace std;
 using namespace ibex;
 
+std::ostream& operator<<(std::ostream& os, const interval_empty_default& a)
+{
+	if (a.is_empty()) os << "EmptyInterval";
+	else if (a.lb() != a.ub())
+	{ 
+		os << "[" << setprecision(4) << a.lb() << ", " << setprecision(4) << a.ub() << "] "; 
+	}
+	else os << a.lb();
+	return os;
+}
+//----------------------------------------------------------------------
+interval_empty_default& interval_empty_default::Intersect(const interval_empty_default& Y) 
+{ 
+	interval_empty_default X = *this; interval_empty_default Z = Inter(X, Y); *this = Z; return *this; 
+}
 //----------------------------------------------------------------------
 // Useful real-valued functions
 //----------------------------------------------------------------------
@@ -251,19 +266,6 @@ void DistanceDirSegmentsOrCircles(double& d, double& phi, double mx, double my, 
 	if (d1a < d1b) { d = d1a; phi = phi1a-theta; } else { d = d1b; phi = phi1b-theta; }
 }
 //----------------------------------------------------------------------
-// Operators
-//----------------------------------------------------------------------
-//std::ostream& operator<<(std::ostream& os, const interval& a)
-//{
-//	if (a.is_empty()) os << "EmptyInterval";
-//	else if (a.lb() != a.ub())
-//	{ 
-//		os << "[" << setprecision(4) << a.lb() << ", " << setprecision(4) << a.ub() << "] "; 
-//	}
-//	else os << a.lb();
-//	return os;
-//}
-//----------------------------------------------------------------------
 // Interval-valued functions
 //----------------------------------------------------------------------
 interval Min(const interval& x, const interval& y)
@@ -417,6 +419,11 @@ double Center(const interval& a)
 double Width(const interval& a)
 {
 	return a.diam();
+}
+//------------------------------------------------------------------------------
+double Rad(const interval& a)
+{
+	return a.rad();
 }
 //------------------------------------------------------------------------------
 double ToReal(const interval& a)

@@ -1,2 +1,2 @@
-interval-adapt
+interval_adapt
 ==============
