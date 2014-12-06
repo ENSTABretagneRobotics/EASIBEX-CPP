@@ -191,24 +191,36 @@ extern const double nan_double;
 class interval_empty_default : public ibex::Interval 
 {
 public:
+	//----------------------------------------------------------------------
+	// Constructors/destructors
+	//----------------------------------------------------------------------
 	interval_empty_default() : ibex::Interval(ibex::Interval::EMPTY_SET) { }
 	interval_empty_default(const ibex::Interval& _i) : ibex::Interval(_i) { }
 	interval_empty_default(double a, double b) : ibex::Interval(a, b) { }
 	interval_empty_default(double a) : ibex::Interval(a) { }
+	//----------------------------------------------------------------------
+	// Operators
+	//----------------------------------------------------------------------
+	// Needed because of errors : overloads have similar conversions...
+	friend interval_empty_default operator*(const interval_empty_default& x1, const interval_empty_default& x2) { return ibex::Interval(x1)*ibex::Interval(x2); }
+	friend interval_empty_default operator*(const ibex::Interval& x1, const interval_empty_default& x2) { return ibex::Interval(x1)*ibex::Interval(x2); }
+	friend interval_empty_default operator*(const interval_empty_default& x1, const ibex::Interval& x2) { return ibex::Interval(x1)*ibex::Interval(x2); }
+	friend interval_empty_default operator*(const double& x1, const interval_empty_default& x2) { return x1*ibex::Interval(x2); }
+	friend interval_empty_default operator*(const interval_empty_default& x1, const double& x2) { return ibex::Interval(x1)*x2; }
 	//operator const ibex::Interval&() const { return *this; }
 	friend std::ostream& operator<<(std::ostream& os, const interval_empty_default& a);
 #ifdef QT_VERSION 
-	//inline friend QDataStream& operator<<(QDataStream& s, const interval_empty_default& i)
+	//friend QDataStream& operator<<(QDataStream& s, const interval_empty_default& i)
 	//{
 	//	s << i.lb() << i.ub() << i.is_empty();
 	//	return s;
 	//}	
-	//inline friend QDataStream& operator>>(QDataStream& s, interval_empty_default& i)
+	//friend QDataStream& operator>>(QDataStream& s, interval_empty_default& i)
 	//{
 	//	s >> i.lb() >> i.ub() >> i.is_empty();
 	//	return s;
 	//}
-	inline friend QDebug operator<<(QDebug os, const interval_empty_default& a)
+	friend QDebug operator<<(QDebug os, const interval_empty_default& a)
 	{
 		if (a.is_empty()) os.nospace() << "EmptyInterval";
 		else if (a.lb() != a.ub())
@@ -219,17 +231,12 @@ public:
 		return os.space();
 	}
 #endif // QT_VERSION 
+	//----------------------------------------------------------------------
+	// Member functions
+	//----------------------------------------------------------------------
 	interval_empty_default& Intersect(const interval_empty_default& Y);
 	bool IsEmpty(void) const { return is_empty(); }
 };
-
-// Needed because of errors : overloads have similar conversions...
-// Should be friend?
-inline interval_empty_default operator*(const interval_empty_default& x1, const interval_empty_default& x2) { return ibex::Interval(x1)*ibex::Interval(x2); }
-inline interval_empty_default operator*(const ibex::Interval& x1, const interval_empty_default& x2) { return ibex::Interval(x1)*ibex::Interval(x2); }
-inline interval_empty_default operator*(const interval_empty_default& x1, const ibex::Interval& x2) { return ibex::Interval(x1)*ibex::Interval(x2); }
-inline interval_empty_default operator*(const double& x1, const interval_empty_default& x2) { return x1*ibex::Interval(x2); }
-inline interval_empty_default operator*(const interval_empty_default& x1, const double& x2) { return ibex::Interval(x1)*x2; }
 
 // interval will be noted as before...
 #define interval interval_empty_default
