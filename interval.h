@@ -20,9 +20,11 @@
 #include <iomanip>
 #include <iostream>
 #include <algorithm>
+//#include <limits> // For std::numeric_limits<double>.
 #include "iboolean.h"
 
-// min, max, MIN, MAX, ERROR may need to be undefined for ibex...
+// Some macros may need to be undefined for ibex...
+#pragma push_macro("boolean")
 #pragma push_macro("ERROR")
 #pragma push_macro("MAX")
 #pragma push_macro("MIN")
@@ -45,6 +47,9 @@
 #ifdef ERROR
 #undef ERROR
 #endif // ERROR
+#ifdef boolean
+#undef boolean
+#endif // boolean
 #endif // PREVENT_MACROS_UNDEF_IBEX
 
 #ifdef _MSC_VER
@@ -121,6 +126,7 @@
 #pragma pop_macro("MIN")
 #pragma pop_macro("MAX")
 #pragma pop_macro("ERROR")
+#pragma pop_macro("boolean")
 
 #ifdef _MSC_VER
 #ifndef UNREFERENCED_PARAMETER
@@ -164,6 +170,7 @@
 #ifndef NAN
 extern const unsigned long nan[2];
 extern const double nan_double;
+//#define NAN (std::numeric_limits<double>::quiet_NaN())
 #define NAN nan_double
 #define NAN_CONSTS_NEEDED
 #endif // NAN
@@ -174,6 +181,7 @@ extern const double nan_double;
 //#define oo 1.0/0.0
 //#define oo 1000000000.0
 //#define oo INFINITY
+//#define oo (std::numeric_limits<double>::infinity())
 #define oo POS_INFINITY
 #endif // oo
 
@@ -188,6 +196,31 @@ public:
 	interval_empty_default(double a, double b) : ibex::Interval(a, b) { }
 	interval_empty_default(double a) : ibex::Interval(a) { }
 	//operator const ibex::Interval&() const { return *this; }
+	friend std::ostream& operator<<(std::ostream& os, const interval_empty_default& a);
+#ifdef QT_VERSION 
+	//inline friend QDataStream& operator<<(QDataStream& s, const interval_empty_default& i)
+	//{
+	//	s << i.lb() << i.ub() << i.is_empty();
+	//	return s;
+	//}	
+	//inline friend QDataStream& operator>>(QDataStream& s, interval_empty_default& i)
+	//{
+	//	s >> i.lb() >> i.ub() >> i.is_empty();
+	//	return s;
+	//}
+	inline friend QDebug operator<<(QDebug os, const interval_empty_default& a)
+	{
+		if (a.is_empty()) os.nospace() << "EmptyInterval";
+		else if (a.lb() != a.ub())
+		{ 
+			os.nospace() << "[" << a.lb() << ", " << a.ub() << "] "; 
+		}
+		else os.nospace() << a.lb();
+		return os.space();
+	}
+#endif // QT_VERSION 
+	interval_empty_default& Intersect(const interval_empty_default& Y);
+	bool IsEmpty(void) const { return is_empty(); }
 };
 
 // Needed because of errors : overloads have similar conversions...
@@ -222,12 +255,14 @@ extern const interval nai;
 #define NAI_CONST_NEEDED
 #endif // NAI
 
+#ifndef DISABLE_USING_NAMESPACE_STD_INTERVAL_H
 using namespace std;
+#endif // DISABLE_USING_NAMESPACE_STD_INTERVAL_H
 
 // Include <QDataStream> and <QDebug> before this file to be able to use Qt specific features if you have Qt.
 #ifdef QT_VERSION 
-class QDataStream;
-class QDebug;
+//class QDataStream;
+//class QDebug;
 #else
 #define qDebug() std::cout
 #endif // QT_VERSION 
@@ -238,8 +273,8 @@ typedef double reel;
 //----------------------------------------------------------------------
 // Useful real-valued functions
 //----------------------------------------------------------------------
-double Min(vector<double>& x);
-double Max(vector<double>& x);
+double Min(std::vector<double>& x);
+double Max(std::vector<double>& x);
 double Sign(const double x);
 double Chi(const double a, const double b, const double c);
 double Arccossin(const double x, const double y);
@@ -248,50 +283,22 @@ double Det(double ux, double uy, double vx, double vy);
 double DistanceDirSegment(double mx, double my, double theta, double ax, double ay, double bx, double by);
 void DistanceDirSegment(double& d, double& phi, double mx, double my, double theta, double ax, double ay, double bx, double by);
 double DistanceDirSegments(double mx, double my, double theta, 
-						   vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+						   std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by);
 void DistanceDirSegments(double& d, double& phi, double mx, double my, double theta, 
-						 vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+						 std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by);
 #define DistanceDirCercle DistanceDirCircle
 #define DistanceDirCercles DistanceDirCircles
 double DistanceDirCircle(double mx, double my, double theta, double cx, double cy, double r);
 void DistanceDirCircle(double& d, double& phi, double mx, double my, double theta, double cx, double cy, double r);
-double DistanceDirCircles(double mx, double my, double theta, vector<double> cx, vector<double> cy, vector<double> r);
+double DistanceDirCircles(double mx, double my, double theta, std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 void DistanceDirCircles(double& d, double& phi, double mx, double my, double theta, 
-						vector<double> cx, vector<double> cy, vector<double> r);
+						std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 double DistanceDirSegmentsOrCircles(double mx, double my, double theta,
-									vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by,
-									vector<double> cx, vector<double> cy, vector<double> r);
+									std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by,
+									std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 void DistanceDirSegmentsOrCircles(double& d, double& phi, double mx, double my, double theta,
-								  vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by,
-								  vector<double> cx, vector<double> cy, vector<double> r);
-//----------------------------------------------------------------------
-// Operators
-//----------------------------------------------------------------------
-//std::ostream& operator<<(std::ostream& os, const interval& a);
-#ifdef QT_VERSION 
-//inline QDataStream& operator<<(QDataStream& s, const interval& i)
-//{
-//	s << i.lb() << i.ub() << i.is_empty();
-//	return s;
-//}
-//
-//inline QDataStream& operator>>(QDataStream& s, interval& i)
-//{
-//	s >> i.lb() >> i.ub() >> i.is_empty();
-//	return s;
-//}
-
-inline QDebug operator<<(QDebug os, const interval& a)
-{
-	if (a.is_empty()) os.nospace() << "EmptyInterval";
-	else if (a.lb() != a.ub())
-	{ 
-		os.nospace() << "[" << a.lb() << ", " << a.ub() << "] "; 
-	}
-	else os.nospace() << a.lb();
-	return os.space();
-}
-#endif // QT_VERSION 
+								  std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by,
+								  std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 //----------------------------------------------------------------------
 // Interval-valued functions
 //----------------------------------------------------------------------
@@ -320,9 +327,9 @@ interval Det(interval& ux, interval& uy, double& vx, double& vy);
 interval Step(const interval&);
 interval Parabole(const interval&, double, double, double);
 interval Inter(const interval&, const interval&);
-interval Inter(vector<interval> x);
+interval Inter(std::vector<interval> x);
 interval Union(const interval&, const interval&);
-interval Union(vector<interval> x);
+interval Union(std::vector<interval> x);
 interval Inflate(const interval&, double);
 //----------------------------------------------------------------------
 // Other functions
@@ -331,6 +338,7 @@ double Inf(const interval&);
 double Sup(const interval&);
 double Center(const interval&);
 double Width(const interval&);
+double Rad(const interval&);
 #define ToReel ToReal
 #define Todouble ToReal
 double ToReal(const interval&);
@@ -364,7 +372,7 @@ void Cequal(interval& Y, interval& X);
 void Cmin(interval& a, interval& b, interval& c, int sens = 0);
 void Cmin(interval& a, interval& b, interval& c, interval& d, int sens = 0);
 void Cmin(interval& a, interval& b, interval& c, interval& d, interval& e, int sens = 0);
-int Cmin(interval& a, vector<interval>& x, int sens = 0);
+int Cmin(interval& a, std::vector<interval>& x, int sens = 0);
 void Cmax(interval& a, interval& b, interval& c, int sens = 0);
 void Cabs(interval& Y, interval& X, int sens = 0);
 #define Csame_sign Csign
@@ -405,70 +413,70 @@ void CDistanceDirLine(interval& dist, interval& mx, interval& my, interval& thet
 int CDistanceDirSegment(interval& dist, interval& mx, interval& my, interval& theta, 
 						double ax, double ay, double bx, double by, int sens = 0);
 void CDistanceDirSegments(interval& distmin, interval& mx, interval& my, interval& theta, 
-						  vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+						  std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by);
 void CPointInLine(interval& mx, interval& my, double& ax, double& ay, double& bx, double& by);
 #define CinSegment CPointInSegment
 void CPointInSegment(interval& mx, interval& my, double ax, double ay, double bx, double by);
 #define CinSegments CPointInSegments
-void CPointInSegments(interval& mx, interval& my, vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+void CPointInSegments(interval& mx, interval& my, std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by);
 #define CinCircle CPointInCircle
 void CPointInCircle(interval& mx, interval& my, double cx, double cy, double r);
 #define CinCircles CPointInCircles
-void CPointInCircles(interval& mx, interval& my, vector<double> cx, vector<double> cy, vector<double> r, bool truth = true);
+void CPointInCircles(interval& mx, interval& my, std::vector<double> cx, std::vector<double> cy, std::vector<double> r, bool truth = true);
 #define CinSegmentsOrCircles CPointInSegmentsOrCircles
 void CPointInSegmentsOrCircles(interval& mx, interval& my, 
-							   vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
-							   vector<double> cx, vector<double> cy, vector<double> r);
+							   std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by, 
+							   std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 void CPointOutsideSegment(interval& mx, interval& my, double& ax, double& ay, double& bx, double& by, bool outer);
 void CPointOutsideSegments(interval& mx, interval& my, 
-						   vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, bool outer);
+						   std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by, bool outer);
 void CPoseInSegment(interval& mx, interval& my, interval& phi, double& ax, double& ay, double& bx, double& by);
 void CPoseInSegments(interval& mx, interval& my, interval& phi, 
-					 vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+					 std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by);
 void CPoseInCircle(interval& mx, interval& my, interval& phi, double& cx, double& cy, double& r);
-void CPoseInCircles(interval& mx, interval& my, interval& phi, vector<double> cx, vector<double> cy, vector<double> r);
+void CPoseInCircles(interval& mx, interval& my, interval& phi, std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 void CPoseInSegmentsOrCircles(interval& mx, interval& my, interval& malpha, 
-							  vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
-							  vector<double> cx, vector<double> cy, vector<double> r);
+							  std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by, 
+							  std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 void CPoseTrans(interval& qx, interval& qy, interval& d, interval& px, interval& py, interval& theta);  //Go straight
 void CPoseRotTrans(interval& qx, interval& qy, interval& beta, interval& phi, interval& d, interval& px, interval& py, interval& alpha);
 void CPoseTransInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& d, 
-								vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
-								vector<double> cx,vector<double> cy, vector<double> r);
+								std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by, 
+								std::vector<double> cx,std::vector<double> cy, std::vector<double> r);
 void CPoseTransRotInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& d, interval& psi, 
-								   vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
-								   vector<double> cx, vector<double> cy, vector<double> r);
+								   std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by, 
+								   std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 void CPoseRotTransRotInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& phi, interval& d, interval& psi, 
-									  vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
-									  vector<double> cx, vector<double> cy, vector<double> r);
+									  std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by, 
+									  std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 void CPoseRotTransPointInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& phi, interval& d, 
-										vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
-										vector<double> cx, vector<double> cy, vector<double> r);
+										std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by, 
+										std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 void CPoseTransPointInWall(interval& px,interval& py, interval& alpha, interval& d, 
 						   double ax, double ay, double bx, double by, bool truth = true);
 void CPoseTransPointInWalls(interval& px,interval& py, interval& alpha, interval& d0, 
-							vector<double>& ax, vector<double>& ay, vector<double>& bx, vector<double>& by, bool truth = true);
+							std::vector<double>& ax, std::vector<double>& ay, std::vector<double>& bx, std::vector<double>& by, bool truth = true);
 void CPoseTransPointInWallsOrCircles(interval& px,interval& py, interval& alpha, interval& d0, 
-									 vector<double> ax,vector<double> ay,vector<double> bx,vector<double> by, 
-									 vector<double> cx, vector<double> cy, vector<double> r, bool truth = true);
+									 std::vector<double> ax,std::vector<double> ay,std::vector<double> bx,std::vector<double> by, 
+									 std::vector<double> cx, std::vector<double> cy, std::vector<double> r, bool truth = true);
 void CPoseTowardSegment(interval& mx, interval& my, interval& theta, 
 						double& ax, double& ay, double& bx, double& by, bool truth = true);
 #define Ccroisepas Cnocross
 void Cnocross(interval& px, interval& py, interval& mx, interval& my, double& ax, double& ay, double& bx, double& by);
 #define CPatteCroiseAucunSegment CLegCrossNoSegment
 void CLegCrossNoSegment(interval& dist, interval& px, interval& py, interval& theta, 
-						vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+						std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by);
 void CLegOnWalls(interval& dist, interval& px, interval& py, interval& theta, 
-				 vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by);
+				 std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by);
 void CLegOnWallsOrCircles(interval& dist, interval& px, interval& py, interval& theta, 
-						  vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, 
-						  vector<double> cx, vector<double> cy, vector<double> r);
+						  std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by, 
+						  std::vector<double> cx, std::vector<double> cy, std::vector<double> r);
 void ShowContraction(interval&, interval&, interval&, interval&);
 void IntButterfly(interval& Y, interval Yo, interval dY, interval& X, interval Xo, int sens);
 void Inter1(interval&, interval&, const interval&, const interval&, const interval&);
 void Sucre(interval&, const interval&);
 void Cnotin(interval& X, interval& Y);
-void C_q_in(interval& x, int q, vector<interval>& y);
+void C_q_in(interval& x, int q, std::vector<interval>& y);
 //----------------------------------------------------------------------
 // Separators
 //----------------------------------------------------------------------
