@@ -755,7 +755,7 @@ void Cnotin(box& X, const box& Y)
 //----------------------------------------------------------------------
 void C_q_in(box& x, int q, vector<box>& yj)
 {
-	Array<IntervalVector> V(yj.size());
+	Array<IntervalVector> V((int)yj.size());
 	for (unsigned int j = 0 ; j < yj.size(); j++)
 	{
 		IntervalVector* Vj = new IntervalVector(yj[j].dim);

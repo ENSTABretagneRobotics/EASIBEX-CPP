@@ -1829,7 +1829,7 @@ void C_q_in(interval& x, int q, vector<interval>& y)
 	//	V[i]=Vi;
 	//}
 	//x = (qinter(V,q))[0];
-	Array<IntervalVector> V(y.size());
+	Array<IntervalVector> V((int)y.size());
 	for (unsigned int i = 0 ;i < y.size(); i++)
 	{
 		IntervalVector* Vi = new IntervalVector(1, y[i]);
