@@ -715,6 +715,12 @@ void Cexp(interval& Y, interval& X, int sens)
 	if (sens != 1) bwd_exp(Y,X);
 }
 //----------------------------------------------------------------------
+void Clog(interval& Y, interval& X, int sens)
+{   
+	if (sens != -1) Y &= log(X);
+	if (sens != 1) bwd_log(Y,X);
+}
+//----------------------------------------------------------------------
 void Cpow(interval& Y, interval& X, int n)
 {   
 	static Variable x, y;
