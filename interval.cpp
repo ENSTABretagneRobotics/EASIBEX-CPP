@@ -793,6 +793,18 @@ void Cnorm(interval& N, interval& X, interval& Y, interval& Z, int sens)
 	}
 }
 //----------------------------------------------------------------------
+void Cdist(interval& R, interval& X1, interval& Y1, interval& X2, interval& Y2)
+{
+	static Variable x1, y1, x2, y2, r;
+	static NumConstraint C(x1,y1,x2,y2,r, pow(x1-x2,2)+pow(y1-y2,2)=pow(r,2));
+	static CtcHC4 ctc(C);
+	IntervalVector P(5);
+	P[0]=X1; P[1]=Y1; P[2]=X2; P[3]=Y2; P[4]=R;
+	try {ctc.contract(P);} catch(EmptyBoxException) {X1=interval::EMPTY_SET;Y1=X1; X2=X1; Y2=X1; R=X1; return;}
+	X1=P[0]; Y1=P[1]; X2=P[2]; Y2=P[3]; R=P[4];
+	return;
+}
+//----------------------------------------------------------------------
 void Cscal(interval& s, interval& ux, interval& uy, interval& vx, interval& vy)
 {
 	interval z1 = ux*vx;
@@ -1102,6 +1114,17 @@ C_q_in(P,1,L);
 mx=P[1];  my=P[2];   theta=P[3];
 }*/
 //----------------------------------------------------------------------
+void CinRing(interval& X, interval& Y, double cx, double cy, interval R)
+{
+	static Variable x, y, r, vcx, vcy;
+	static NumConstraint C(x,y,r,vcx,vcy, pow(x-vcx,2)+pow(y-vcy,2)=pow(r,2));
+	static CtcHC4 ctc(C);
+	IntervalVector P(5); P[0]=X; P[1]=Y; P[2]=R; P[3]=cx; P[4]=cy;
+	try {ctc.contract(P);} catch(EmptyBoxException) {X=interval::EMPTY_SET;Y=X; return;}
+	X=P[0]; Y=P[1];
+	return;
+}
+//----------------------------------------------------------------------
 void CPointInLine(interval& mx, interval& my, double& ax, double& ay, double& bx, double& by)
 {    
 	// contracte relativement a la contrainte : "m appartient a la droite (a,b)"
@@ -1296,13 +1319,13 @@ void CPoseInSegment(interval& mx, interval& my, interval& phi, double& ax, doubl
 {     
 	// contracte relativement a "la pose (m,phi) appartient au segment [a,b]"
 	CPointInSegment(mx,my,ax,ay,bx,by);
-	double ab_x=bx-ax;   //(bx-ax)*cos(phi)+(by-ay)*sin(phi)=0
+	double ab_x=bx-ax; //(bx-ax)*cos(phi)+(by-ay)*sin(phi)=0
 	double ab_y=by-ay;
 	interval cphi=Cos(phi);
 	interval sphi=Sin(phi);
 	interval scal=interval(-0.0,0.0);   CScal(scal,ab_x,ab_y,cphi,sphi); // phi orthogonal to the line
 	interval det(0,oo);
-	Cdet(det,cphi,sphi,ab_x,ab_y);   // select the right direction
+	Cdet(det,cphi,sphi,ab_x,ab_y); // select the right direction
 	Ccos(cphi,phi,-1);
 	Csin(sphi,phi,-1);
 	if ((mx.is_empty())||(my.is_empty())||(phi.is_empty())) { mx = interval(); my = interval(); phi = interval(); }
@@ -1338,7 +1361,7 @@ void CPoseInCircle(interval& mx, interval& my, interval& phi, double& cx, double
 	interval sphi=Sin(phi);
 	interval scal=interval(0,oo);   CScal(scal,mc_x,mc_y,cphi,sphi); //scal(cphi,sphi,cx_mx,cy-my)>0
 	interval det(0,0);
-	Cdet(det,cphi,sphi,mc_x,mc_y);   //det(cphi,sphi,cx_mx,cy-my)=0
+	Cdet(det,cphi,sphi,mc_x,mc_y); //det(cphi,sphi,cx_mx,cy-my)=0
 	Ccos(cphi,phi,-1);
 	Csin(sphi,phi,-1);
 	if ((mx.is_empty())||(my.is_empty())||(phi.is_empty())) { mx = interval(); my = interval(); phi = interval(); }
@@ -1821,23 +1844,15 @@ void C_q_in(interval& x, int q, vector<interval>& y)
 //----------------------------------------------------------------------
 void SinRing(interval& X, interval& Y, double cx, double cy, interval R, bool outer)
 {   
-	static Variable x, y, r, vcx, vcy;
-	static NumConstraint C(x,y,r,vcx,vcy, pow(x-vcx,2)+pow(y-vcy,2)=pow(r,2));
-	static CtcHC4 ctc(C);
 	if (outer==true)
-	{  
-		IntervalVector P(5); P[0]=X; P[1]=Y; P[2]=R;P[3]=cx;P[4]=cy;
-		try {ctc.contract(P);} catch(EmptyBoxException) {X=interval::EMPTY_SET;Y=X; return;}
-		X=P[0]; Y=P[1];
+	{
+		CinRing(X,Y,cx,cy,R);
 		return;
 	}
-	interval Xa,Ya,Xb,Yb;
-	IntervalVector Pa(5); Pa[0]=X; Pa[1]=Y; Pa[2]=interval(-1,R.lb());Pa[3]=cx;Pa[4]=cy;
-	try {ctc.contract(Pa);} catch(EmptyBoxException) {Xa=interval::EMPTY_SET;Ya=Xa;}
-	Xa=Pa[0]; Ya=Pa[1];
-	IntervalVector Pb(5); Pb[0]=X; Pb[1]=Y; Pb[2]=interval(R.ub(),POS_INFINITY);Pb[3]=cx;Pb[4]=cy;
-	try {ctc.contract(Pb);} catch(EmptyBoxException) {Xb=interval::EMPTY_SET;Yb=Xb;}
-	Xb=Pb[0]; Yb=Pb[1];
+	interval Xa(X),Ya(Y),Xb(X),Yb(Y);
+	//Xa=X;Xb=X;Ya=Y;Yb=Y;
+	CinRing(Xa,Ya,cx,cy,interval(-1,R.lb()));
+	CinRing(Xb,Yb,cx,cy,interval(R.ub(),POS_INFINITY));
 	X=Xa|Xb;
 	Y=Ya|Yb;
 }

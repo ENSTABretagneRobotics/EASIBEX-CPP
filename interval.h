@@ -401,6 +401,8 @@ void Catan(interval& Y, interval& X, int sens = 0);
 #define CNorm Cnorm
 void Cnorm(interval& N, interval& X, interval& Y);
 void Cnorm(interval& N, interval& X, interval& Y, interval& Z, int sens);
+#define Cdistance Cdist
+void Cdist(interval& R, interval& X1, interval& Y1, interval& X2, interval& Y2);
 #define CScal Cscal
 void Cscal(interval& s, interval& ux, interval& uy, interval& vx, interval& vy);
 void Cscal(interval& s, double& ux, double& uy, interval& vx, interval& vy);
@@ -421,6 +423,7 @@ int CDistanceDirSegment(interval& dist, interval& mx, interval& my, interval& th
 						double ax, double ay, double bx, double by, int sens = 0);
 void CDistanceDirSegments(interval& distmin, interval& mx, interval& my, interval& theta, 
 						  std::vector<double> ax, std::vector<double> ay, std::vector<double> bx, std::vector<double> by);
+void CinRing(interval& X, interval& Y, double cx, double cy, interval R);
 void CPointInLine(interval& mx, interval& my, double& ax, double& ay, double& bx, double& by);
 #define CinSegment CPointInSegment
 void CPointInSegment(interval& mx, interval& my, double ax, double ay, double bx, double by);
