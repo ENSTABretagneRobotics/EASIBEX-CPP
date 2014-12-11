@@ -1115,7 +1115,7 @@ C_q_in(P,1,L);
 mx=P[1];  my=P[2];   theta=P[3];
 }*/
 //----------------------------------------------------------------------
-void CinRing(interval& X, interval& Y, double cx, double cy, interval R)
+void CPointInRing(interval& X, interval& Y, double cx, double cy, interval R)
 {
 	static Variable x, y, r, vcx, vcy;
 	static NumConstraint C(x,y,r,vcx,vcy, pow(x-vcx,2)+pow(y-vcy,2)=pow(r,2));
