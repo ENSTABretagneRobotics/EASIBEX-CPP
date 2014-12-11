@@ -474,96 +474,96 @@ bool In(double a, const interval& b)
 //----------------------------------------------------------------------
 // Contractors
 //----------------------------------------------------------------------
-void Cadd(interval& Z, interval& X, interval& Y, int sens)
+void Cadd(interval& Z, interval& X, interval& Y, int dir)
 {
-	if (sens != -1) Z &= X+Y; 
-	if (sens != 1) bwd_add(Z,X,Y); 
+	if (dir != -1) Z &= X+Y; 
+	if (dir != 1) bwd_add(Z,X,Y); 
 }
 //----------------------------------------------------------------------
-void Cadd(interval& Z, double x, interval& Y, int sens)
+void Cadd(interval& Z, double x, interval& Y, int dir)
 {
-	if (sens != -1) Z &= x+Y; 
-	if (sens != 1) 
+	if (dir != -1) Z &= x+Y; 
+	if (dir != 1) 
 	{
 		interval X(x);
 		bwd_add(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Cadd(interval& Z, interval& X, double y, int sens)
+void Cadd(interval& Z, interval& X, double y, int dir)
 {
-	if (sens != -1) Z &= X+y; 
-	if (sens != 1) 
+	if (dir != -1) Z &= X+y; 
+	if (dir != 1) 
 	{
 		interval Y(y);
 		bwd_add(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Csub(interval& Z, interval& X, interval& Y, int sens)
+void Csub(interval& Z, interval& X, interval& Y, int dir)
 {
-	if (sens != -1) Z &= X-Y; 
-	if (sens != 1) bwd_sub(Z,X,Y); 
+	if (dir != -1) Z &= X-Y; 
+	if (dir != 1) bwd_sub(Z,X,Y); 
 }
 //----------------------------------------------------------------------
-void Csub(interval& Z, double x, interval& Y, int sens)
+void Csub(interval& Z, double x, interval& Y, int dir)
 {
-	if (sens != -1) Z &= x-Y; 
-	if (sens != 1) 
+	if (dir != -1) Z &= x-Y; 
+	if (dir != 1) 
 	{
 		interval X(x);
 		bwd_sub(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Csub(interval& Z, interval& X, double y, int sens)
+void Csub(interval& Z, interval& X, double y, int dir)
 {
-	if (sens != -1) Z &= X-y; 
-	if (sens != 1) 
+	if (dir != -1) Z &= X-y; 
+	if (dir != 1) 
 	{
 		interval Y(y);
 		bwd_sub(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Cmul(interval& Z, interval& X, interval& Y, int sens)
+void Cmul(interval& Z, interval& X, interval& Y, int dir)
 {
-	if (sens != -1) Z &= X*Y; 
-	if (sens != 1) bwd_mul(Z,X,Y); 
+	if (dir != -1) Z &= X*Y; 
+	if (dir != 1) bwd_mul(Z,X,Y); 
 }
 //----------------------------------------------------------------------
-void Cmul(interval& Z, double x, interval& Y, int sens)
+void Cmul(interval& Z, double x, interval& Y, int dir)
 {
-	if (sens != -1) Z &= x*Y; 
-	if (sens != 1) 
+	if (dir != -1) Z &= x*Y; 
+	if (dir != 1) 
 	{
 		interval X(x);
 		bwd_mul(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Cmul(interval& Z, interval& X, double y, int sens)
+void Cmul(interval& Z, interval& X, double y, int dir)
 {
-	if (sens != -1) Z &= X*y; 
-	if (sens != 1) 
+	if (dir != -1) Z &= X*y; 
+	if (dir != 1) 
 	{
 		interval Y(y);
 		bwd_mul(Z,X,Y); 
 	}
 }
 //----------------------------------------------------------------------
-void Cdiv(interval& Z, interval& X, interval& Y, int sens)
+void Cdiv(interval& Z, interval& X, interval& Y, int dir)
 {    
-	if (sens != -1) Z &= X/Y;
-	if (sens != 1) bwd_div(Z,X,Y);
+	if (dir != -1) Z &= X/Y;
+	if (dir != 1) bwd_div(Z,X,Y);
 }
 //----------------------------------------------------------------------
-void Cequal(interval& Y, interval& X, int sens)
+void Cequal(interval& Y, interval& X, int dir)
 {
-	// Y=X           =>  sens=1;
-	// X=Y           =>  sens=-1; 
-	if (sens != -1) Y = Inter(Y, X);
-	if (sens != 1) X = Inter(X, Y);
+	// Y=X           =>  dir=1;
+	// X=Y           =>  dir=-1; 
+	if (dir != -1) Y = Inter(Y, X);
+	if (dir != 1) X = Inter(X, Y);
 }
 //----------------------------------------------------------------------
 void Cequal(interval& Y, interval& X)
@@ -571,13 +571,13 @@ void Cequal(interval& Y, interval& X)
 	Y = Inter(Y, X); X = Y;
 }
 //----------------------------------------------------------------------
-void Cmin(interval& a, interval& b, interval& c, int sens)
+void Cmin(interval& a, interval& b, interval& c, int dir)
 {   
-	// a=min(b,c)                       =>  sens=1;
-	// b=min-1(a,c); c=min-1(a,b)       =>  sens=-1; 
+	// a=min(b,c)                       =>  dir=1;
+	// b=min-1(a,c); c=min-1(a,b)       =>  dir=-1; 
 	//if ((a.is_empty()||b.is_empty())||c.is_empty()) a=b=c=interval();
-	if (sens != -1) { a = Inter(a, Min(b, c)); }
-	if (sens != 1) 
+	if (dir != -1) { a = Inter(a, Min(b, c)); }
+	if (dir != 1) 
 	{
 		if (Disjoint(a, b)) c = Inter(c, a);
 		else { if (Disjoint(a, c)) b = Inter(b, a); }
@@ -586,26 +586,26 @@ void Cmin(interval& a, interval& b, interval& c, int sens)
 	}
 }
 //----------------------------------------------------------------------
-void Cmin(interval& a, interval& b, interval& c, interval& d, int sens)
+void Cmin(interval& a, interval& b, interval& c, interval& d, int dir)
 {
 	// contrainte quaternaire   a=min(b,c,d)
 	interval z1 = Min(b, c);
 	Cmin(a, z1, d, 1);
-	if (sens == 1) return;
+	if (dir == 1) return;
 	Cmin(a, z1, d, -1);
 	Cmin(z1, b, c, -1);
 }
 //----------------------------------------------------------------------
-void Cmin(interval& a, interval& b, interval& c, interval& d, interval& e, int sens)
+void Cmin(interval& a, interval& b, interval& c, interval& d, interval& e, int dir)
 {   
 	interval z1 = Min(b,c,d);
 	Cmin(a, z1, e, 1);
-	if (sens == 1) return;
+	if (dir == 1) return;
 	Cmin(a, z1, e, -1);
 	Cmin(z1, b, c, d, -1);
 }
 //----------------------------------------------------------------------
-int Cmin(interval& a, vector<interval>& x, int sens)
+int Cmin(interval& a, vector<interval>& x, int dir)
 {
 	vector<interval> z(x.size());
 	z[0] = x[0];
@@ -615,7 +615,7 @@ int Cmin(interval& a, vector<interval>& x, int sens)
 		Cmin(z[i], x[i], z[i - 1], 1);
 	}
 	Cequal(a, z[x.size() - 1]);
-	if (sens == 1) return 1;
+	if (dir == 1) return 1;
 	for (int i = (int)(x.size() - 1); i >= 1; i--)
 	{
 		Cmin(z[i], x[i], z[i - 1], -1);;
@@ -624,12 +624,12 @@ int Cmin(interval& a, vector<interval>& x, int sens)
 	return 1;
 }
 //----------------------------------------------------------------------
-void Cmax(interval& a, interval& b, interval& c, int sens)
+void Cmax(interval& a, interval& b, interval& c, int dir)
 {
-	// a=max(b,c)                       =>  sens=1;
-	// b=max-1(a,c); c=max-1(a,b)       =>  sens=-1; 
-	if (sens != -1) { a = Inter(a, Max(b, c)); }
-	if (sens != 1) 
+	// a=max(b,c)                       =>  dir=1;
+	// b=max-1(a,c); c=max-1(a,b)       =>  dir=-1; 
+	if (dir != -1) { a = Inter(a, Max(b, c)); }
+	if (dir != 1) 
 	{
 		if (Disjoint(a, b)) c = Inter(c, a);
 		else { if (Disjoint(a, c)) b = Inter(b, a); }
@@ -638,13 +638,13 @@ void Cmax(interval& a, interval& b, interval& c, int sens)
 	}
 }
 //----------------------------------------------------------------------
-void Cabs(interval& Y, interval& X, int sens)
+void Cabs(interval& Y, interval& X, int dir)
 {
-	// Y=|X|=max(X,-X)     =>     sens=1
-	// X=Abs-1(Y)          =>     sens=-1
+	// Y=|X|=max(X,-X)     =>     dir=1
+	// X=Abs-1(Y)          =>     dir=-1
 	interval Xd = Inter(X, interval(0, oo)), Xg = Inter(X, interval(-oo, 0));
-	if (sens != -1) { interval Yd = Inter(Y, Xd), Yg = Inter(Y, -Xg); Y = Union(Yd, Yg); }
-	if (sens != 1) { Xd = Inter(Xd, Y); Xg = Inter(Xg, -Y); X = Union(Xd, Xg); }
+	if (dir != -1) { interval Yd = Inter(Y, Xd), Yg = Inter(Y, -Xg); Y = Union(Yd, Yg); }
+	if (dir != 1) { Xd = Inter(Xd, Y); Xg = Inter(Xg, -Y); X = Union(Xd, Xg); }
 }
 //----------------------------------------------------------------------
 void Csign(interval& Y, interval& X)
@@ -653,18 +653,18 @@ void Csign(interval& Y, interval& X)
 	bwd_sign(Y,X);
 }
 //----------------------------------------------------------------------
-void Csign(interval& Y, interval& X, int sens, double a)
+void Csign(interval& Y, interval& X, int dir, double a)
 {
 	// sign(X)=2*step(X)-1
 	interval un(1), deux(2);
-	if (sens != -1)
+	if (dir != -1)
 	{
 		interval A1(-oo, oo); Cstep(A1, X, 1, a);
 		Y = Inter(Y, (deux*A1) - un);
 		//interval Z=Inter(X,interval(0));
 		//if (!Z.is_empty()) Y=Union(Y,interval(0));
 	}
-	if (sens != 1)
+	if (dir != 1)
 	{
 		interval A2 = (Y + un) / deux;
 		Cstep(A2, X, -1, a);
@@ -703,22 +703,22 @@ void Cboolean(interval& X)
 	X = Inter(X, A);
 }
 //----------------------------------------------------------------------
-void Csqr(interval &Y, interval &X, int sens)
+void Csqr(interval &Y, interval &X, int dir)
 {   
-	if (sens != -1) Y &= sqr(X);
-	if (sens != 1) bwd_sqr(Y,X);
+	if (dir != -1) Y &= sqr(X);
+	if (dir != 1) bwd_sqr(Y,X);
 }
 //-----------------------------------------------------------------------
-void Cexp(interval& Y, interval& X, int sens)
+void Cexp(interval& Y, interval& X, int dir)
 {   
-	if (sens != -1) Y &= exp(X);
-	if (sens != 1) bwd_exp(Y,X);
+	if (dir != -1) Y &= exp(X);
+	if (dir != 1) bwd_exp(Y,X);
 }
 //----------------------------------------------------------------------
-void Clog(interval& Y, interval& X, int sens)
+void Clog(interval& Y, interval& X, int dir)
 {   
-	if (sens != -1) Y &= log(X);
-	if (sens != 1) bwd_log(Y,X);
+	if (dir != -1) Y &= log(X);
+	if (dir != 1) bwd_log(Y,X);
 }
 //----------------------------------------------------------------------
 void Cpow(interval& Y, interval& X, int n)
@@ -731,22 +731,22 @@ void Cpow(interval& Y, interval& X, int n)
 	X=P[0]; Y=P[1];
 }
 //----------------------------------------------------------------------
-void Ccos(interval &Y, interval &X, int sens)
+void Ccos(interval &Y, interval &X, int dir)
 {   
-	if (sens != -1) Y &= cos(X);
-	if (sens != 1) bwd_cos(Y,X);
+	if (dir != -1) Y &= cos(X);
+	if (dir != 1) bwd_cos(Y,X);
 }
 //-----------------------------------------------------------------------
-void Csin(interval &Y, interval &X, int sens)
+void Csin(interval &Y, interval &X, int dir)
 {   
-	if (sens != -1) Y &= sin(X);
-	if (sens != 1) bwd_sin(Y,X);
+	if (dir != -1) Y &= sin(X);
+	if (dir != 1) bwd_sin(Y,X);
 }
 //-----------------------------------------------------------------------
-void Ctan(interval& Y, interval& X, int sens)
+void Ctan(interval& Y, interval& X, int dir)
 {
-	if (sens != -1)  { Y &= tan(X); }
-	if (sens != 1) 
+	if (dir != -1)  { Y &= tan(X); }
+	if (dir != 1) 
 	{ 
 		bwd_tan(Y,X); 
 		Y &= tan(X); //On est oblige de le rappeler car sinon par optimal // bug Ibex
@@ -754,11 +754,11 @@ void Ctan(interval& Y, interval& X, int sens)
 	//if (Y.is_empty()) qDebug()<<"aaa";
 }
 //----------------------------------------------------------------------
-void Catan(interval& Y, interval& X, int sens)
+void Catan(interval& Y, interval& X, int dir)
 {
-	// Y=atan(X)                  =>  sens=1;
-	// X=atan-1(Y)=tan(Y)         =>  sens=-1; 
-	Ctan(X, Y, -sens);
+	// Y=atan(X)                  =>  dir=1;
+	// X=atan-1(Y)=tan(Y)         =>  dir=-1; 
+	Ctan(X, Y, -dir);
 }
 //----------------------------------------------------------------------
 void Cnorm(interval& N, interval& X, interval& Y)
@@ -774,15 +774,15 @@ void Cnorm(interval& N, interval& X, interval& Y)
 	Csqr(SqrN, N, -1);
 }
 //----------------------------------------------------------------------
-void Cnorm(interval& N, interval& X, interval& Y, interval& Z, int sens)
+void Cnorm(interval& N, interval& X, interval& Y, interval& Z, int dir)
 {
 	interval SqrX = Sqr(X), SqrY = Sqr(Y), SqrZ = Sqr(Z), SqrN = Sqr(N);
-	if (sens != -1)
+	if (dir != -1)
 	{
 		SqrN = Inter(SqrN, SqrX+SqrY+SqrZ);
 		Csqr(SqrN, N, -1);
 	}
-	if (sens != 1)
+	if (dir != 1)
 	{
 		SqrZ = Inter(SqrZ, SqrN-SqrX-SqrY);
 		SqrY = Inter(SqrY, SqrN-SqrX-SqrZ);
@@ -823,34 +823,34 @@ void Cscal(interval& s, double& ux, double& uy, interval& vx, interval& vy)
 	Cmul(z1, ux, vx, -1);
 }
 //----------------------------------------------------------------------
-void Cdet(interval& det, interval& ux, interval& uy, interval& vx, interval& vy, int sens)
+void Cdet(interval& det, interval& ux, interval& uy, interval& vx, interval& vy, int dir)
 {
 	interval z1 = ux*vy;
 	interval z2 = vx*uy;
 	Csub(det, z1, z2, 1);
-	if (sens == 1) return;
+	if (dir == 1) return;
 	Csub(det, z1, z2, -1);
 	Cmul(z2, vx, uy, -1);
 	Cmul(z1, ux, vy, -1);
 }
 //----------------------------------------------------------------------
-void Cdet(interval& det, double& ux, double& uy, interval& vx, interval& vy, int sens)
+void Cdet(interval& det, double& ux, double& uy, interval& vx, interval& vy, int dir)
 {
 	interval z1 = ux*vy;
 	interval z2 = uy*vx;
 	Csub(det, z1, z2, -1);
-	if (sens == 1) return;
+	if (dir == 1) return;
 	Csub(det, z1, z2, -1);
 	Cmul(z2, uy, vx, -1);
 	Cmul(z1, ux, vy, -1);
 }
 //----------------------------------------------------------------------
-void Cdet(interval& det, interval& ux, interval& uy, double& vx, double& vy, int sens)
+void Cdet(interval& det, interval& ux, interval& uy, double& vx, double& vy, int dir)
 {
 	interval z1 = vy*ux;
 	interval z2 = vx*uy;
 	Csub(det, z1, z2, -1);
-	if (sens == 1) return;
+	if (dir == 1) return;
 	Csub(det, z1, z2, -1);
 	Cmul(z2, vx, uy, -1);
 	Cmul(z1, vy, ux, -1);
@@ -858,6 +858,7 @@ void Cdet(interval& det, interval& ux, interval& uy, double& vx, double& vy, int
 //----------------------------------------------------------------------
 void Cstep(interval& Y, interval& X)
 {   
+	// Should replace 1E10 by oo?
 	vector<double> ax,ay,bx,by;
 	ax.push_back(-1E10); ay.push_back(0); bx.push_back(0);    by.push_back(0);
 	ax.push_back(0);     ay.push_back(0); bx.push_back(0);    by.push_back(1);
@@ -865,20 +866,20 @@ void Cstep(interval& Y, interval& X)
 	CPointInSegments(X,Y,ax,ay,bx,by);
 }
 //----------------------------------------------------------------------
-void Cstep(interval& Y, interval& X, int sens, double a)
+void Cstep(interval& Y, interval& X, int dir, double a)
 {
 	/* Y=step(X)=1 if X.lb()>a
 	=0 if X.ub()<a
-	=[0,1] if X.lb()=<a<=X.ub()   =>  sens=1
+	=[0,1] if X.lb()=<a<=X.ub()   =>  dir=1
 
 	X=step-1(Y)=Empty if Inter(Y,[0,1])=Empty
 	=Empty if X.ub()<a & 0 \not in Y
 	=Empty if X.lb()>a & 1 \not in Y
 	=X if X.ub()<a & 0 \in Y
 	=X if X.lb()>a & 1 \in Y
-	=X if X.lb()=<a<=X.ub()   =>  sens=-1 */
+	=X if X.lb()=<a<=X.ub()   =>  dir=-1 */
 	Y = Inter(Y, interval(0, 1));
-	if (sens != -1)
+	if (dir != -1)
 	{
 		if (!X.is_empty())
 		{
@@ -887,7 +888,7 @@ void Cstep(interval& Y, interval& X, int sens, double a)
 		}
 		else Y = interval();
 	}
-	if (sens != 1)
+	if (dir != 1)
 	{
 		if (!Y.is_empty())
 		{
@@ -902,13 +903,13 @@ void Cstep(interval& Y, interval& X, int sens, double a)
 	}
 }
 //----------------------------------------------------------------------
-void Cramp(interval& Y, interval& X, int sens, double a)
+void Cramp(interval& Y, interval& X, int dir, double a)
 {
 	// Y=ramp(X)=max(0,X);
 	// X=ramp-1(Y)
 	Y = Inter(Y, interval(0, oo));
-	if (sens != -1) { interval Zero(a); Cmax(Y, X, Zero, 1); }
-	if (sens != 1) 
+	if (dir != -1) { interval Zero(a); Cmax(Y, X, Zero, 1); }
+	if (dir != 1) 
 	{
 		interval Xd = Inter(X, interval(a, oo));
 		interval Xg = Inter(X, interval(-oo, a));
@@ -922,7 +923,7 @@ void Cramp(interval& Y, interval& X, int sens, double a)
 	}
 }
 //----------------------------------------------------------------------
-void Cheaviside(interval& Y, interval& X, int sens, double a)
+void Cheaviside(interval& Y, interval& X, int dir, double a)
 {
 	/* Y=heavyside(X)=1 if X.lb()>=a
 	=0 if X.ub()<a
@@ -931,10 +932,10 @@ void Cheaviside(interval& Y, interval& X, int sens, double a)
 	=Empty if X.lb()>a & 1 \not in Y
 	=X if X.ub()<a & 0 \in Y
 	=X if X.lb()>a & 1 \in Y
-	=X if X.lb()=<a<=X.ub()   =>  sens=-1 */
+	=X if X.lb()=<a<=X.ub()   =>  dir=-1 */
 	interval Z = Inter(interval(0), Y);
 	interval W = Inter(interval(1), Y);
-	if (sens != -1)
+	if (dir != -1)
 	{
 		interval U = Union(Z, W);
 		if (X.is_empty()) Y = X;
@@ -949,7 +950,7 @@ void Cheaviside(interval& Y, interval& X, int sens, double a)
 			}
 		}
 	}
-	if (sens != 1)
+	if (dir != 1)
 	{
 		if (Z.is_empty() && W.is_empty()) X = Y = Z;
 		else {
@@ -960,18 +961,18 @@ void Cheaviside(interval& Y, interval& X, int sens, double a)
 	}
 }
 //----------------------------------------------------------------------
-void Crect(interval& Z, interval& X, interval& Y, int sens)
+void Crect(interval& Z, interval& X, interval& Y, int dir)
 {
 	interval A1(-oo, oo), A2(-oo, oo), A3(-oo, oo), A4(-oo, oo), deux(2);
 	X = Inter(X, interval(0, oo));
 	interval aire = Y / deux;
-	if (sens != -1)
+	if (dir != -1)
 	{
 		A1 = Inter(A1, X + aire); Cstep(A2, A1, 1);
 		A3 = Inter(A3, X - aire); Cstep(A4, A3, 1);
 		Z = Inter(Z, A2 - A4);
 	}
-	if (sens != 1)
+	if (dir != 1)
 	{
 		A2 = Inter(A2, interval(0, 1)); A4 = Inter(A4, interval(0, 1));
 		A2 = Inter(A2, Z + A4); A4 = Inter(A4, A2 - Z);
@@ -981,19 +982,19 @@ void Crect(interval& Z, interval& X, interval& Y, int sens)
 	}
 }
 //----------------------------------------------------------------------
-void Crect(interval& Y, interval& X, int sens)
+void Crect(interval& Y, interval& X, int dir)
 {
-	interval V(1); Crect(Y, X, V, sens);
+	interval V(1); Crect(Y, X, V, dir);
 }
 //----------------------------------------------------------------------
-void Ctriangle(interval& Y, interval& X, int sens)
+void Ctriangle(interval& Y, interval& X, int dir)
 {
 	interval Xg = Inter(X, interval(-oo, -0.5));
 	interval Xd = Inter(X, interval(0.5, oo));
 	interval Xm = Inter(X, interval(-0.5, 0.5));
 	interval un(1), deux(2);
 	Y = Inter(Y, interval(0, 1));
-	if (sens != -1)
+	if (dir != -1)
 	{
 		interval Yg(0), Yd(0), Ym(0);
 		if (Xg.is_empty()) Yg = interval();
@@ -1002,7 +1003,7 @@ void Ctriangle(interval& Y, interval& X, int sens)
 		else Ym = Inter(Y, (-deux*Abs(X)) + un);
 		Y = Inter(Y, Union(Yd, Union(Yg, Ym)));
 	}
-	if (sens != 1)
+	if (dir != 1)
 	{
 		if (Y.is_empty()) X = interval();
 		else {
@@ -1038,7 +1039,7 @@ void CDistanceDirLine(interval& dist, interval& mx, interval& my, interval& thet
 	Csub(ma_y,ay,my,-1); Csub(ma_x,ax,mx,-1);
 }
 //----------------------------------------------------------------------
-int CDistanceDirSegment(interval& dist, interval& mx, interval& my, interval& theta, double ax, double ay, double bx, double by, int sens)
+int CDistanceDirSegment(interval& dist, interval& mx, interval& my, interval& theta, double ax, double ay, double bx, double by, int dir)
 {
 	// la distance dist entre le point m=(mx,my) au segment [a,b] suivant le vecteur u
 	if ((dist.is_empty())||(mx.is_empty())||(my.is_empty())||(theta.is_empty()))
@@ -1061,8 +1062,8 @@ int CDistanceDirSegment(interval& dist, interval& mx, interval& my, interval& th
 	//REDONDANT
 	Cchi(dist, z3, infty, dist);
 	Cchi(dist, z4, infty, dist);
-	if (sens == 1) return 1;
-	//if (sens == 1) return;
+	if (dir == 1) return 1;
+	//if (dir == 1) return;
 	Cdiv(d1, z3, z4, -1);
 	Cmin(z5, z1, z2, z3, -1);
 	Cdet(z4, ux, uy, ab_x, ab_y, -1);
@@ -1751,9 +1752,9 @@ void ShowContraction(interval& Xcd, interval& Xcg, interval& X, interval& Xc)
 	Xcg = interval(Xc.ub(), X.ub());
 }
 //----------------------------------------------------------------------
-void IntButterfly(interval& Y, interval Yo, interval dY, interval& X, interval Xo, int sens)
+void IntButterfly(interval& Y, interval Yo, interval dY, interval& X, interval Xo, int dir)
 {
-	UNREFERENCED_PARAMETER(sens);
+	UNREFERENCED_PARAMETER(dir);
 
 	interval z1(-oo, +oo);
 	interval z2(-oo, +oo);
