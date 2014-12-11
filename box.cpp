@@ -348,7 +348,7 @@ box Union(const box& X, const box& Y)
 	return Ans;
 }
 //----------------------------------------------------------------------
-box Inflate(box& X, double eps)
+box Inflate(const box& X, double eps)
 {
 	Update(X);
 	box Ans(Size(X));
@@ -358,32 +358,32 @@ box Inflate(box& X, double eps)
 //----------------------------------------------------------------------
 // Other functions
 //----------------------------------------------------------------------
-double Width(box& X) 
+int Size(const box& X) { return (X.dim); }
+//----------------------------------------------------------------------
+double Width(const box& X) 
 {
 	return Width(X[AxePrincipal(X)]);
 }
 //----------------------------------------------------------------------
-double Width(box& X, vector<int>& v) 
+double Width(const box& X, vector<int>& v) 
 {
 	return Width(X[AxePrincipal(X, v)]);
 }
 //----------------------------------------------------------------------
-double Width(box& X, box& Y)
+double Width(const box& X, const box& Y)
 {
 	int i = AxePrincipal(X, Y);
 	return (Width(X[i])*fabs(Y[i].lb()));
 }
 //----------------------------------------------------------------------
-int Size(const box& X) { return (X.dim); }
-//----------------------------------------------------------------------
-double Volume(box& X)
+double Volume(const box& X)
 {
 	double vol = 1;
 	for (int i = 1; i <= Size(X); i++) vol = vol*Width(X[i]);
 	return vol;
 }
 //----------------------------------------------------------------------
-double Marge(box X, box Y)
+double Marge(const box& X, const box& Y)
 {
 	if ((X.IsEmpty()) || (Y.IsEmpty())) return -oo;
 	double ans = Marge(X[1], Y[1]);
@@ -392,7 +392,7 @@ double Marge(box X, box Y)
 	return ans;
 }
 //-----------------------------------------------------------------------
-bool IsBox(box X)
+bool IsBox(const box& X)
 {
 	if (X.IsEmpty()) return false;
 	for (int i = 1; i <= Size(X); i++)
@@ -402,7 +402,7 @@ bool IsBox(box X)
 	return true;
 }
 //----------------------------------------------------------------------
-void Update(box& X)
+void Update(const box& X)
 {
 	for (int i = 1; i <= Size(X); i++)
 	{
@@ -414,26 +414,19 @@ void Update(box& X)
 	}
 }
 //----------------------------------------------------------------------
-// Calcule l'angle entre 2 vecteur de dimension 2
-double Angle(box& V, box& W)
+double Angle(const box& V, const box& W)
 {
+	// Calcule l'angle entre 2 vecteurs de dimension 2.
 	// Attention, il faut des vecteurs et non des box et les vecteurs doivent etre
-	// de dimension 2
-	if ((Size(V) != 2) || (Size(W) != 2))
-	{
-		cout << "error";
-	}
-	double n2, costeta, sinteta;
-	interval nv = Norm(V);
-	interval nw = Norm(W);
-	interval nvw = nv*nw;
-	n2 = Todouble(nvw);
-	costeta = Todouble(ProduitScalaire(V, W) / n2);
-	sinteta = Todouble(Determinant(V, W)) / n2;
-	return(Arccossin(costeta, sinteta));
+	// de dimension 2.
+	if ((Size(V) != 2)||(Size(W) != 2)) return NAN;
+	interval nv = Norm(V); interval nw = Norm(W); interval nvw = nv*nw;
+	double n2 = ToReal(nvw);
+	double costheta = ToReal(Scal(V, W))/n2, sintheta = ToReal(Det(V, W))/n2;
+	return (Arccossin(costheta, sintheta));
 }
 //----------------------------------------------------------------------
-interval Norm(box X)
+interval Norm(const box& X)
 {
 	if (X.IsEmpty()) return interval();
 	interval r = 0;
@@ -441,32 +434,32 @@ interval Norm(box X)
 	return (Sqrt(r));
 }
 //----------------------------------------------------------------------
-interval NormEuclid(box X, box Y)
+interval NormEuclid(const box& X, const box& Y)
 {
 	if (Size(X) != Size(Y)) return interval();
-	if (X.IsEmpty() || Y.IsEmpty()) return interval();
+	if (X.IsEmpty()||Y.IsEmpty()) return interval();
 	interval r = 0;
 	for (int i = 1; i <= Size(X); i++) r = r + Sqr(Y[i] - X[i]);
 	return (Sqrt(r));
 }
 //----------------------------------------------------------------------
-interval NormInf(box X, box Y)
+interval NormInf(const box& X, const box& Y)
 {
 	if (Size(X) != Size(Y)) return interval();
-	if (X.IsEmpty() || Y.IsEmpty()) return interval();
+	if (X.IsEmpty()||Y.IsEmpty()) return interval();
 	interval ans = Abs(Y[1] - X[1]);
 	for (int i = 1; i <= Size(X); i++) ans = Max(ans, Abs(Y[i] - X[i]));
 	return ans;
 }
 //----------------------------------------------------------------------
-interval ProduitScalaire(box& U, box& V)
+interval Scal(const box& U, const box& V)
 {
 	interval sum = 0;
 	for (int i = 1; i <= Size(U); i++)  sum = sum + U[i] * V[i];
 	return (sum);
 }
 //----------------------------------------------------------------------
-interval Det(box& U, box& V)
+interval Det(const box& U, const box& V)
 {
 	interval u1 = U[1];
 	interval v2 = V[2];
@@ -476,7 +469,7 @@ interval Det(box& U, box& V)
 	return u1*v2 - v1*u2;
 }
 //----------------------------------------------------------------------
-double Eloignement2(box& X, box& Y)
+double Eloignement2(const box& X, const box& Y)
 {
 	// prend le point X1 de X qui est le plus eloigne de [Y] et renvoie la
 	// distance de X1 avec [Y]
@@ -497,7 +490,7 @@ double Eloignement2(box& X, box& Y)
 	return e;
 }
 //------------------------------------------------------------------------------
-double EloignementRelatif2(box& X, box& Y)
+double EloignementRelatif2(const box& X, const box& Y)
 {
 	// prend le point X1 de X qui est le plus eloigne de [Y] et renvoie la
 	// distance de X1 avec [Y]
@@ -527,7 +520,7 @@ bool Disjoint(const box& X, const box& Y)
 	return false;
 }
 //----------------------------------------------------------------------
-bool Subset(box& X, box& Y)
+bool Subset(const box& X, const box& Y)
 {
 	if (X.IsEmpty()) return true;
 	if (Y.IsEmpty()) return false;
@@ -536,7 +529,7 @@ bool Subset(box& X, box& Y)
 	return (b);
 }
 //----------------------------------------------------------------------
-bool SubsetStrict(box& X, box& Y)
+bool SubsetStrict(const box& X, const box& Y)
 {
 	if (Y.IsEmpty()) return false;
 	if (X.IsEmpty()) return true;
@@ -545,7 +538,7 @@ bool SubsetStrict(box& X, box& Y)
 	return (b);
 }
 //----------------------------------------------------------------------
-iboolean In(box X, box Y)
+iboolean In(const box& X, const box& Y)
 {
 	if (X.IsEmpty() || Y.IsEmpty()) return ifalse;
 	iboolean r = itrue;
@@ -558,7 +551,7 @@ iboolean In(box X, box Y)
 	return r;
 }
 //------------------------------------------------------------------------------
-bool Prop(box& X, box& Y)  // Normalement X is a subset of y (used in SIVEX)
+bool Prop(const box& X, const box& Y)  // Normally X is a subset of y (used in SIVEX)
 {
 	if (X.IsEmpty()) return false;
 	if (Y.IsEmpty()) return false;
@@ -567,7 +560,7 @@ bool Prop(box& X, box& Y)  // Normalement X is a subset of y (used in SIVEX)
 	return false;
 }
 //----------------------------------------------------------------------
-int AxePrincipal(box& X)
+int AxePrincipal(const box& X)
 {
 	int kmax = 1;
 	double widthmax = Width(X[kmax]);
@@ -581,7 +574,7 @@ int AxePrincipal(box& X)
 	return kmax;
 }
 //----------------------------------------------------------------------
-int AxePrincipal(box& X, box& Y)
+int AxePrincipal(const box& X, const box& Y)
 {
 	int kmax = 1;
 	double widthmax = Width(X[kmax])*fabs(Y[kmax].lb());
@@ -595,7 +588,7 @@ int AxePrincipal(box& X, box& Y)
 	return kmax;
 }
 //----------------------------------------------------------------------
-int AxePrincipal(box& X, vector<int>& v)
+int AxePrincipal(const box& X, vector<int>& v)
 {
 	int kmax = (int)(v[1]), SizeV = (int)(v.size() - 1);
 	double widthmax = Width(X[kmax]);
@@ -612,14 +605,14 @@ double decrease(const box& X, const box& Y)
 	double e = 0;
 	for (int k = 1; k <= X.dim; k++)
 	{
-		if ((X[k].is_empty()) || (Y[k].is_empty())) return (-1);
+		if ((X[k].is_empty())||(Y[k].is_empty())) return (-1);
 		double e1 = 0;
 		double Xinf = X[k].lb(), Xsup = X[k].ub();
 		double Yinf = Y[k].lb(), Ysup = Y[k].ub();
 		if (Xsup >= Ysup) e1 = max(e1, Xsup - Ysup);
 		if (Xinf <= Yinf) e1 = max(e1, Yinf - Xinf);
-		if (Xsup<Ysup) e1 = max(e1, Ysup - Xsup);
-		if (Xinf>Yinf) e1 = max(e1, Xinf - Yinf);
+		if (Xsup < Ysup) e1 = max(e1, Ysup - Xsup);
+		if (Xinf > Yinf) e1 = max(e1, Xinf - Yinf);
 		e = max(e, e1);
 	}
 	return e;
@@ -631,14 +624,14 @@ double decrease(const box& X, const box& Y, vector<int> Tab)
 	double e = 0; int size = (int)(Tab.size() - 1);
 	for (int k = 1; k <= size; k++)
 	{
-		if ((X[Tab[k]].is_empty()) || (Y[Tab[k]].is_empty())) return (-1);
+		if ((X[Tab[k]].is_empty())||(Y[Tab[k]].is_empty())) return (-1);
 		double e1 = 0;
 		double Xinf = X[Tab[k]].lb(), Xsup = X[Tab[k]].ub();
 		double Yinf = Y[Tab[k]].lb(), Ysup = Y[Tab[k]].ub();
 		if (Xsup >= Ysup) e1 = max(e1, Xsup - Ysup);
 		if (Xinf <= Yinf) e1 = max(e1, Yinf - Xinf);
-		if (Xsup<Ysup) e1 = max(e1, Ysup - Xsup);
-		if (Xinf>Yinf) e1 = max(e1, Xinf - Yinf);
+		if (Xsup < Ysup) e1 = max(e1, Ysup - Xsup);
+		if (Xinf > Yinf) e1 = max(e1, Xinf - Yinf);
 		e = max(e, e1);
 	}
 	return e;

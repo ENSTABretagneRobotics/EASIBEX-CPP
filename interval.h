@@ -347,6 +347,7 @@ double Inf(const interval&);
 double Sup(const interval&);
 double Center(const interval&);
 double Width(const interval&);
+double Volume(const interval&);
 double Rad(const interval&);
 #define ToReel ToReal
 #define Todouble ToReal

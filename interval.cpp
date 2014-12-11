@@ -426,6 +426,11 @@ double Width(const interval& a)
 	return a.diam();
 }
 //------------------------------------------------------------------------------
+double Volume(const interval& a)
+{
+	return a.diam();
+}
+//------------------------------------------------------------------------------
 double Rad(const interval& a)
 {
 	return a.rad();
