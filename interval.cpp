@@ -1796,16 +1796,18 @@ void Sucre(interval& P, const interval& S)
 	if (In(S.ub(), P)) { P = interval(S.ub(),P.ub()); return; }
 }
 //----------------------------------------------------------------------
-//void Cnotin(interval& X, const interval& Y)
+//void Cnotin(interval& X, const interval& Y, int dir)
 //{   
+//	UNREFERENCED_PARAMETER(dir);
 //	if (Y.is_empty()) return;
 //	interval X1 = Inter(X, interval(-oo,Y.lb()));
 //    interval X2 = Inter(X, interval(Y.ub(),+oo));
 //    X = Inter(X, Union(X1,X2));
 //}
 //----------------------------------------------------------------------
-void Cnotin(interval& X, interval& Y)
+void Cnotin(interval& X, interval& Y, int dir)
 { 
+	UNREFERENCED_PARAMETER(dir);
 	if ((X.is_empty())||(Y.is_empty())) return;
 	else
 	{
