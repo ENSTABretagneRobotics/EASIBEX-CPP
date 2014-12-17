@@ -489,7 +489,7 @@ double Eloignement2(const box& X, const box& Y)
 	}
 	return e;
 }
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------
 double EloignementRelatif2(const box& X, const box& Y)
 {
 	// prend le point X1 de X qui est le plus eloigne de [Y] et renvoie la
@@ -550,7 +550,7 @@ iboolean In(const box& X, const box& Y)
 	}
 	return r;
 }
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------
 bool Prop(const box& X, const box& Y)  // Normally X is a subset of y (used in SIVEX)
 {
 	if (X.IsEmpty()) return false;
