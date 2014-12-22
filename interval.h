@@ -494,7 +494,7 @@ void C_q_in(interval& x, int q, std::vector<interval>& y);
 //----------------------------------------------------------------------
 // Separators
 //----------------------------------------------------------------------
-void SinRing(interval& X, interval& Y, double cx, double cy, interval R, bool outer);
+void SinRing(interval& X, interval& Y, double cx, double cy, interval R, bool outer = false);
 //----------------------------------------------------------------------
 // Other
 //----------------------------------------------------------------------
