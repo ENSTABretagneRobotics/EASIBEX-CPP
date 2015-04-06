@@ -1373,7 +1373,7 @@ void CPoseInCircle(interval& mx, interval& my, interval& phi, double& cx, double
 	if ((mx.is_empty())||(my.is_empty())||(phi.is_empty())) { mx = interval(); my = interval(); phi = interval(); }
 }
 //----------------------------------------------------------------------
-void CPoseInCircles(interval& mx, interval& my, interval& phi,vector<double> cx, vector<double> cy, vector<double> r)
+void CPoseInCircles(interval& mx, interval& my, interval& phi, vector<double> cx, vector<double> cy, vector<double> r)
 { 
 	if ((cx.size() == 0)||(cy.size() == 0)||(r.size() == 0)) return;
 	vector<interval> Mx(cx.size());
@@ -1394,7 +1394,7 @@ void CPoseInCircles(interval& mx, interval& my, interval& phi,vector<double> cx,
 	phi=Inter(phi,Union(Mphi));
 }
 //----------------------------------------------------------------------
-void CPoseInSegmentsOrCircles(interval& mx,interval& my,interval& malpha, vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by,
+void CPoseInSegmentsOrCircles(interval& mx, interval& my, interval& malpha, vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by,
 							  vector<double> cx, vector<double> cy, vector<double> r)
 {      
 	// "la pose (m,alpha) appartient soit au polygone soit a un des cercles de centre ci et de rayon ri"
@@ -1405,8 +1405,8 @@ void CPoseInSegmentsOrCircles(interval& mx,interval& my,interval& malpha, vector
 	interval my0=my;
 	interval malpha0=malpha;
 	CPoseInSegments(mx0,my0,malpha0,ax,ay,bx,by);
-	Mx[0]=mx0;   My[0]=my0;  Malpha[0]=malpha0;
-	mx0=mx;  my0=my;  malpha0=malpha;
+	Mx[0]=mx0; My[0]=my0; Malpha[0]=malpha0;
+	mx0=mx; my0=my; malpha0=malpha;
 	CPoseInCircles(mx0,my0,malpha0,cx,cy,r);
 	Mx[1]=mx0;
 	My[1]=my0;
@@ -1417,7 +1417,7 @@ void CPoseInSegmentsOrCircles(interval& mx,interval& my,interval& malpha, vector
 	// Bug if no segments or no circles, see CPointInSegmentsOrCircles()...?
 }
 //----------------------------------------------------------------------
-void CPoseTrans(interval& qx,interval& qy,interval& dist, interval& px, interval& py, interval& alpha)
+void CPoseTrans(interval& qx, interval& qy, interval& dist, interval& px, interval& py, interval& alpha)
 { 
 	interval ux=Cos(alpha);
 	interval uy=Sin(alpha);
@@ -1436,20 +1436,20 @@ void CPoseTrans(interval& qx,interval& qy,interval& dist, interval& px, interval
 	if ((qx.is_empty())||(qy.is_empty())||(alpha.is_empty())) { qx = interval(); qy = interval(); alpha = interval(); }
 }
 //----------------------------------------------------------------------
-void CPoseTransRot(interval& qx,interval& qy,interval& beta,interval& d, interval& psi, interval& px,interval& py,interval& alpha)
+void CPoseTransRot(interval& qx, interval& qy, interval& beta, interval& d, interval& psi, interval& px,interval& py,interval& alpha)
 {  
 	CPoseTrans(qx,qy,d, px, py,alpha);
 	Cadd(beta,psi,alpha);
 }
 //----------------------------------------------------------------------
-void CPoseRotTrans(interval& qx,interval& qy,interval& beta,interval& phi,interval& d, interval& px,interval& py,interval& alpha)
+void CPoseRotTrans(interval& qx, interval& qy, interval& beta, interval& phi, interval& d, interval& px,interval& py,interval& alpha)
 {   
 	Cadd(beta,phi,alpha);
 	CPoseTrans(qx,qy,d, px, py,beta);
 	Cadd(beta,phi,alpha);
 }
 //----------------------------------------------------------------------
-void CPoseRotTransRot(interval& qx,interval& qy,interval& beta,interval& phi,interval& d, interval& psi, interval& px,interval& py,interval& alpha)
+void CPoseRotTransRot(interval& qx, interval& qy, interval& beta, interval& phi, interval& d, interval& psi, interval& px,interval& py,interval& alpha)
 {   
 	interval delta=alpha+phi;
 	CPoseTransRot(qx,qy,beta,d,psi,px,py,delta);
@@ -1478,7 +1478,7 @@ void CPoseTransRotInWallsOrCircles(interval& px, interval& py, interval& alpha, 
 	CPoseTransRot(qx,qy,beta,d, psi,px, py,alpha);
 }
 //----------------------------------------------------------------------
-void CPoseRotTransRotInWallsOrCircles(interval& px,interval& py,interval& alpha,interval& phi,interval& d,interval& psi, vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, vector<double> cx, vector<double> cy, vector<double> r)
+void CPoseRotTransRotInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& phi, interval& d, interval& psi, vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, vector<double> cx, vector<double> cy, vector<double> r)
 {  
 	interval qx=interval(-oo,oo);
 	interval qy=interval(-oo,oo);
@@ -1488,7 +1488,7 @@ void CPoseRotTransRotInWallsOrCircles(interval& px,interval& py,interval& alpha,
 	CPoseRotTransRot(qx,qy,beta,phi,d,psi,px,py,alpha);
 }
 //----------------------------------------------------------------------
-void CPoseRotTransPointInWallsOrCircles(interval& px,interval& py,interval& alpha,interval& phi,interval& d, vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, vector<double> cx, vector<double> cy, vector<double> r)
+void CPoseRotTransPointInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& phi, interval& d, vector<double> ax, vector<double> ay, vector<double> bx, vector<double> by, vector<double> cx, vector<double> cy, vector<double> r)
 {    
 	interval qx=interval(-oo,oo);
 	interval qy=interval(-oo,oo);
@@ -1498,7 +1498,7 @@ void CPoseRotTransPointInWallsOrCircles(interval& px,interval& py,interval& alph
 	CPoseRotTrans(qx,qy,beta,phi,d,px,py,alpha);
 }
 //----------------------------------------------------------------------
-void CPoseTransPointInLine(interval& px,interval& py,interval& alpha, interval& d, double ax, double ay, double bx, double by)
+void CPoseTransPointInLine(interval& px, interval& py, interval& alpha, interval& d, double ax, double ay, double bx, double by)
 {    
 	interval qx=interval(-oo,oo);
 	interval qy=interval(-oo,oo);
@@ -1508,7 +1508,7 @@ void CPoseTransPointInLine(interval& px,interval& py,interval& alpha, interval& 
 	CPoseTrans(qx,qy,d, px, py,alpha);
 }
 //----------------------------------------------------------------------
-void CPoseTransPointInCircles(interval& px,interval& py,interval& alpha, interval& d, vector<double>& cx, vector<double>& cy, vector<double>& r, bool truth)
+void CPoseTransPointInCircles(interval& px, interval& py, interval& alpha, interval& d, vector<double>& cx, vector<double>& cy, vector<double>& r, bool truth)
 {   
 	interval qx=interval(-oo,oo);
 	interval qy=interval(-oo,oo);
@@ -1517,7 +1517,7 @@ void CPoseTransPointInCircles(interval& px,interval& py,interval& alpha, interva
 	CPoseTrans(qx,qy,d, px, py,alpha);
 }
 //----------------------------------------------------------------------
-void CPoseTransPointInWall(interval& px,interval& py,interval& alpha, interval& d0, double ax, double ay, double bx, double by, bool truth)
+void CPoseTransPointInWall(interval& px, interval& py, interval& alpha, interval& d0, double ax, double ay, double bx, double by, bool truth)
 {    
 	interval qx=interval(-oo,oo);
 	interval qy=interval(-oo,oo);
@@ -1541,7 +1541,7 @@ void CPoseTransPointInWall(interval& px,interval& py,interval& alpha, interval& 
 
 }
 //----------------------------------------------------------------------
-void CPoseTransPointInWalls(interval& px,interval& py,interval& alpha, interval& d0, vector<double>& ax, vector<double>& ay, vector<double>& bx, vector<double>& by, bool truth)
+void CPoseTransPointInWalls(interval& px, interval& py, interval& alpha, interval& d0, vector<double>& ax, vector<double>& ay, vector<double>& bx, vector<double>& by, bool truth)
 {
 	vector<interval> Lpx;
 	vector<interval> Lpy;
@@ -1571,7 +1571,7 @@ void CPoseTransPointInWalls(interval& px,interval& py,interval& alpha, interval&
 	}
 }
 //----------------------------------------------------------------------
-void CPoseTransPointInWallsOrCircles(interval& px,interval& py,interval& alpha, interval& d0, vector<double> ax,vector<double> ay,vector<double> bx,vector<double> by,
+void CPoseTransPointInWallsOrCircles(interval& px, interval& py, interval& alpha, interval& d0, vector<double> ax,vector<double> ay,vector<double> bx,vector<double> by,
 									 vector<double> cx, vector<double> cy, vector<double> r, bool truth)
 {
 	vector<interval> Px(2), Py(2), Theta(2);
