@@ -50,7 +50,7 @@
 #ifdef boolean
 #undef boolean
 #endif // boolean
-#endif // PREVENT_MACROS_UNDEF_IBEX
+#endif // !PREVENT_MACROS_UNDEF_IBEX
 
 #ifdef _MSC_VER
 // Disable some Visual Studio warnings that happen sometimes in ibex.
@@ -133,7 +133,7 @@
 #ifdef _MSC_VER
 #ifndef UNREFERENCED_PARAMETER
 #define UNREFERENCED_PARAMETER(P) (P)
-#endif // UNREFERENCED_PARAMETER
+#endif // !UNREFERENCED_PARAMETER
 #endif // _MSC_VER
 
 #ifdef __GNUC__
@@ -165,7 +165,7 @@
 
 #ifndef INFINITY
 #define INFINITY HUGE_VAL
-#endif // INFINITY
+#endif // !INFINITY
 
 #if defined(_MSC_VER) || defined(__BORLANDC__) 
 // Used to define NAN (Not A Number).
@@ -175,7 +175,7 @@ extern const double nan_double;
 //#define NAN (std::numeric_limits<double>::quiet_NaN())
 #define NAN nan_double
 #define NAN_CONSTS_NEEDED
-#endif // NAN
+#endif // !NAN
 #endif // defined(_MSC_VER) || defined(__BORLANDC__) 
 
 // Infinity is denoted by oo.
@@ -185,7 +185,7 @@ extern const double nan_double;
 //#define oo INFINITY
 //#define oo (std::numeric_limits<double>::infinity())
 #define oo POS_INFINITY
-#endif // oo
+#endif // !oo
 
 // Try to transform the default interval constructor so that it returns an empty interval instead of [-oo,oo]...
 //inline ibex::Interval empty_default_interval() { return ibex::Interval(ibex::Interval::EMPTY_SET); }
@@ -255,18 +255,18 @@ public:
 #define inf lb()
 #define sup ub()
 #define isEmpty is_empty()
-#endif // DISABLE_DEFINES_OLD_INTERVAL_CLASS_VARIABLES
+#endif // !DISABLE_DEFINES_OLD_INTERVAL_CLASS_VARIABLES
 
 // Used to define NAI (Not An Interval).
 #ifndef NAI
 extern const interval nai;
 #define NAI nai
 #define NAI_CONST_NEEDED
-#endif // NAI
+#endif // !NAI
 
 #ifndef DISABLE_USING_NAMESPACE_STD_INTERVAL_H
 using namespace std;
-#endif // DISABLE_USING_NAMESPACE_STD_INTERVAL_H
+#endif // !DISABLE_USING_NAMESPACE_STD_INTERVAL_H
 
 // Include <QDataStream> and <QDebug> before this file to be able to use Qt specific features if you have Qt.
 #ifdef QT_VERSION 
@@ -502,4 +502,4 @@ void diffI(interval &x0, interval &x1, interval &c0, interval &c1);
 iboolean TestDiskExists(const interval& X, const interval& Y, const interval& P1, const interval& P2, const interval& P3);
 iboolean TestDiskForall(const interval& X, const interval& Y, const interval& P1, const interval& P2, const interval& P3);
 
-#endif // __INTERVAL__
+#endif // !__INTERVAL__

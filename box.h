@@ -134,4 +134,4 @@ void Bisect(box& X, box& X1, box& X2, std::vector<int>& v);
 void BisectAlong(box& X, box& X1, box& X2, int i);
 std::vector<box>* diff(box x, box y);
 
-#endif // __BOX__
+#endif // !__BOX__
