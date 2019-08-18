@@ -20,8 +20,6 @@ const double nan_double = -*(double*)nan;
 const interval nai = interval();
 #endif // NAI_CONST_NEEDED
 
-#include <cmath>
-
 using namespace std;
 using namespace ibex;
 
