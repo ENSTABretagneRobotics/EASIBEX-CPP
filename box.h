@@ -1,7 +1,7 @@
 // Compatiblity layer with ibex for the simple interval library from Luc JAULIN, with minor modifications from Fabrice LE BARS and Jeremy NICOLA.
 
-#ifndef __BOX__
-#define __BOX__
+#ifndef BOX_H
+#define BOX_H
 
 #include "interval.h"
 
@@ -134,4 +134,4 @@ void Bisect(box& X, box& X1, box& X2, std::vector<int>& v);
 void BisectAlong(box& X, box& X1, box& X2, int i);
 std::vector<box>* diff(box x, box y);
 
-#endif // !__BOX__
+#endif // !BOX_H

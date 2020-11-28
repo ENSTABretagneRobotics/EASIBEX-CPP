@@ -300,6 +300,14 @@ interval Max(const interval& x, const interval& y, const interval& z)
 	return ibex::max(ibex::max(x, y), z);
 }
 //----------------------------------------------------------------------
+interval Sign(const interval& x)
+{
+	if (x.is_empty()) return interval();
+	if (x.lb() > 0) return interval(1);
+	if (x.ub() < 0) return interval(-1);
+	return interval(-1, 1);
+}
+//----------------------------------------------------------------------
 interval InvSqrt(interval& X)
 {
 	interval Y(-oo,oo);

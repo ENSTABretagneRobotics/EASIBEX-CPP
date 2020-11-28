@@ -1,7 +1,7 @@
 // Compatiblity layer with ibex for the simple interval library from Luc JAULIN, with minor modifications from Fabrice LE BARS and Jeremy NICOLA.
 
-#ifndef __INTERVAL__
-#define __INTERVAL__
+#ifndef INTERVAL_H
+#define INTERVAL_H
 
 #ifdef _MSC_VER
 // Disable some Visual Studio warnings.
@@ -328,6 +328,8 @@ interval Min(const interval& x, const interval& y, const interval& z);
 interval Max(const interval& x, const interval& y);
 interval Max(const interval& x, const interval& y, const interval& z);
 #define Abs ibex::abs
+interval Sign(const interval&);
+//interval Modulo(const interval& a, double x);
 #define Sqr ibex::sqr
 #define Sqrt ibex::sqrt
 interval InvSqrt(interval& X);
@@ -514,4 +516,4 @@ void diffI(interval &x0, interval &x1, interval &c0, interval &c1);
 iboolean TestDiskExists(const interval& X, const interval& Y, const interval& P1, const interval& P2, const interval& P3);
 iboolean TestDiskForall(const interval& X, const interval& Y, const interval& P1, const interval& P2, const interval& P3);
 
-#endif // !__INTERVAL__
+#endif // !INTERVAL_H
